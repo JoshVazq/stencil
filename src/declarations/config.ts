@@ -9,6 +9,7 @@ export interface Config {
   buildLogFilePath?: string;
   bundles?: ConfigBundle[];
   commonjs?: BundlingConfig;
+  cwd?: string;
   nodeResolve?: NodeResolveConfig;
   configPath?: string;
   copy?: CopyTasks;
@@ -20,7 +21,7 @@ export interface Config {
   flags?: ConfigFlags;
   fsNamespace?: string;
   globalScript?: string;
-  globalStyle?: string[];
+  globalStyle?: string;
   hashedFileNameLength?: number;
   hashFileNames?: boolean;
   hydratedCssClass?: string;

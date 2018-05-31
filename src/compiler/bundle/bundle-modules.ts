@@ -5,12 +5,25 @@ import { minifyJs } from '../minifier';
 
 
 export async function generateBundleModules(config: Config, compilerCtx: CompilerCtx, buildCtx: BuildCtx, entryModules: EntryModule[]): Promise<JSModuleMap> {
-  const results: JSModuleMap = {};
+  const results: JSModuleMap = {
+    esm: {},
+    es5: {},
+    esmEs5: {}
+  };
+
+  if (entryModules.length === 0) {
+    // no entry modules, so don't bother
+    return results;
+  }
 
   try {
     // run rollup, but don't generate yet
     // returned rollup bundle can be reused for es module and legacy
     const rollupBundle = await createBundle(config, compilerCtx, buildCtx, entryModules);
+    if (buildCtx.shouldAbort()) {
+      // rollup errored, so let's not continue
+      return results;
+    }
 
     // bundle using only es modules and dynamic imports
     results.esm = await writeEsModules(config, rollupBundle);
@@ -47,6 +60,10 @@ async function minifyChunks(config: Config, compilerCtx: CompilerCtx, buildCtx: 
       .filter(m => !m.startsWith('entry:'))
       .map(chunkKey => jsModuleList[chunkKey])
       .map(async chunk => {
+        if (!chunk || !chunk.code) {
+          return;
+        }
+
         const sourceTarget = (moduleType === 'es5' || moduleType === 'esmEs5') ? 'es5' : 'es2017';
         const minifyJsResults = await minifyJs(config, compilerCtx, chunk.code, sourceTarget, true);
 

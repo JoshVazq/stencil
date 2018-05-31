@@ -12,29 +12,46 @@ const DEST_DIR = path.join(__dirname, '..', 'dist', 'sys', 'node');
 const DEST_FILE = path.join(DEST_DIR, 'index.js');
 
 
-const success = transpile('../src/sys/node/tsconfig.json');
+const success = transpile(path.join('..', 'src', 'sys', 'node', 'tsconfig.json'));
+
+const whitelist = [
+  'uglify-es'
+];
 
 if (success) {
-
-  bundle('clean-css.js');
   bundle('dev-server.js');
   bundle('node-fetch.js');
   bundle('sys-util.js');
-  bundle('auto-prefixer.js');
+  bundle('sys-worker.js');
 
 
   function bundle(entryFileName) {
     webpack({
       entry: path.join(__dirname, 'bundles', entryFileName),
       output: {
-        path: path.join(__dirname, '../dist/sys/node'),
+        path: path.join(__dirname, '..', 'dist', 'sys', 'node'),
         filename: entryFileName,
         libraryTarget: 'commonjs'
       },
-      plugins: [
-        new webpack.optimize.ModuleConcatenationPlugin()
-      ],
-      target: 'node'
+      target: 'node',
+      externals: function(context, request, callback) {
+        if (request.match(/^(\.{0,2})\//)) {
+          // absolute and relative paths are not externals
+          return callback();
+        }
+
+        if (whitelist.indexOf(request) > -1) {
+          // we specifically do not want to bundle these imports
+          require.resolve(request);
+          return callback(null, request);
+        }
+
+        // bundle this import
+        callback();
+      },
+      optimization: {
+        minimize: false
+      }
     }, (err) => {
       if (err) {
         console.error(err);
@@ -42,7 +59,7 @@ if (success) {
     });
   }
 
-  function bundleSysNode() {
+  function bundleNodeSysMain() {
     rollup.rollup({
       input: ENTRY_FILE,
       external: [
@@ -74,7 +91,7 @@ if (success) {
     });
   }
 
-  bundleSysNode();
+  bundleNodeSysMain();
 
 
   // copy opn's xdg-open file

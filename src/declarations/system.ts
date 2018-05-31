@@ -2,6 +2,7 @@ import * as d from './index';
 
 
 export interface StencilSystem {
+  autoprefixCss?(input: string, opts?: any): Promise<string>;
   compiler?: {
     name: string;
     version: string;
@@ -10,38 +11,40 @@ export interface StencilSystem {
   };
   createDom?(): CreateDom;
   createWatcher?(events: d.BuildEvents, paths: string, opts?: any): d.FsWatcher;
-  generateContentHash?(content: string, length: number): string;
+  destroy?(): void;
   fs?: d.FileSystem;
+  generateContentHash?(content: string, length: number): string;
   getClientCoreFile?(opts: {staticName: string}): Promise<string>;
   glob?(pattern: string, options: {
     cwd?: string;
     nodir?: boolean;
   }): Promise<string[]>;
+  gzipSize?(text: string): Promise<number>;
   isGlob?(str: string): boolean;
-  loadConfigFile?(configPath: string): d.Config;
-  autoprefixCss?(input: string, opts?: any): Promise<string>;
-  minifyCss?(input: string, opts?: any): {
+  loadConfigFile?(configPath: string, process?: any): d.Config;
+  minifyCss?(input: string, filePath?: string, opts?: any): Promise<{
     output: string;
     sourceMap?: any;
     diagnostics?: d.Diagnostic[];
-  };
-  minifyJs?(input: string, opts?: any): {
+  }>;
+  minifyJs?(input: string, opts?: any): Promise<{
     output: string;
     sourceMap?: any;
     diagnostics?: d.Diagnostic[];
-  };
+  }>;
   minimatch?(path: string, pattern: string, opts?: any): boolean;
   name: string;
-  resolveModule?(fromDir: string, moduleId: string): string;
   open?: (p: string) => Promise<void>;
   path?: Path;
   platform?: string;
+  resolveModule?(fromDir: string, moduleId: string): string;
   rollup?: {
     rollup: {
       (config: RollupInputConfig): Promise<RollupBundle>;
     };
     plugins: RollupPlugins;
   };
+  scopeCss?: (cssText: string, scopeAttribute: string, hostScopeAttr: string, slotScopeAttr: string) => Promise<string>;
   semver?: {
     gt: (a: string, b: string, loose?: boolean) => boolean;
     gte: (a: string, b: string, loose?: boolean) => boolean;

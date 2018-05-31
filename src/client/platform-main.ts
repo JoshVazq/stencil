@@ -8,16 +8,15 @@ import { createQueueClient } from './queue-client';
 import { CustomStyle } from './polyfills/css-shim/custom-style';
 import { dashToPascalCase } from '../util/helpers';
 import { enableEventListener } from '../core/listeners';
+import { ENCAPSULATION } from '../util/constants';
 import { generateDevInspector } from './dev-inspector';
 import { h } from '../renderer/vdom/h';
 import { initCoreComponentOnReady } from '../core/component-on-ready';
 import { initHostElement } from '../core/init-host-element';
-import { initHostSnapshot } from '../core/host-snapshot';
 import { initStyleTemplate } from '../core/styles';
 import { parseComponentLoader } from '../util/data-parse';
 import { proxyController } from '../core/proxy-controller';
 import { queueUpdate } from '../core/update';
-import { useScopedCss } from '../renderer/vdom/encapsulation';
 
 
 export function createPlatformMain(namespace: string, Context: d.CoreContext, win: d.WindowData, doc: Document, resourcesUrl: string, hydratedCssClass: string, customStyle?: CustomStyle) {
@@ -111,8 +110,6 @@ export function createPlatformMain(namespace: string, Context: d.CoreContext, wi
   function defineComponent(cmpMeta: d.ComponentMeta, HostElementConstructor: any) {
 
     if (!win.customElements.get(cmpMeta.tagNameMeta)) {
-      // keep a map of all the defined components
-      globalDefined[cmpMeta.tagNameMeta] = true;
 
       // define the custom element
       // initialize the members on the host element prototype
@@ -155,9 +152,6 @@ export function createPlatformMain(namespace: string, Context: d.CoreContext, wi
       elm.mode = domApi.$getAttribute(elm, 'mode') || Context.mode;
     }
 
-    // remember a "snapshot" of this host element's current attributes/child nodes/slots/etc
-    initHostSnapshot(plt.domApi, cmpMeta, elm);
-
     if (cmpMeta.componentConstructor) {
       // we're already all loaded up :)
       queueUpdate(plt, elm);
@@ -169,7 +163,7 @@ export function createPlatformMain(namespace: string, Context: d.CoreContext, wi
       // static function as a the bundleIds that returns the module
       const moduleOpts: d.GetModuleOptions = {
         mode: elm.mode,
-        scoped: useScopedCss(domApi.$supportsShadowDom, cmpMeta)
+        scoped: cmpMeta.encapsulation === ENCAPSULATION.ScopedCss || (cmpMeta.encapsulation === ENCAPSULATION.ShadowDom && !domApi.$supportsShadowDom)
       };
 
       (cmpMeta.bundleIds as d.GetModuleFn)(moduleOpts).then(cmpConstructor => {
@@ -206,7 +200,8 @@ export function createPlatformMain(namespace: string, Context: d.CoreContext, wi
       const bundleId = (typeof cmpMeta.bundleIds === 'string') ?
       cmpMeta.bundleIds :
       (cmpMeta.bundleIds as d.BundleIds)[elm.mode];
-      const url = resourcesUrl + bundleId + ((useScopedCss(domApi.$supportsShadowDom, cmpMeta) ? '.sc' : '') + '.js');
+      const useScopedCss = cmpMeta.encapsulation === ENCAPSULATION.ScopedCss || (cmpMeta.encapsulation === ENCAPSULATION.ShadowDom && !domApi.$supportsShadowDom);
+      const url = resourcesUrl + bundleId + ((useScopedCss ? '.sc' : '') + '.js');
 
       // dynamic es module import() => woot!
       __import(url).then(importedModule => {
@@ -251,7 +246,10 @@ export function createPlatformMain(namespace: string, Context: d.CoreContext, wi
     // register all the components now that everything's ready
     // standard es2017 class extends HTMLElement
     (App.components || [])
-      .map(data => parseComponentLoader(data))
+      .map(data => {
+        const cmpMeta = parseComponentLoader(data);
+        return cmpRegistry[cmpMeta.tagNameMeta] = cmpMeta;
+      })
       .forEach(cmpMeta => defineComponent(cmpMeta, class extends HTMLElement {}));
   }
 

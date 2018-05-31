@@ -60,7 +60,13 @@ export function getBuildContext(config: Config, compilerCtx: CompilerCtx, watche
       catchError(buildCtx.diagnostics, e);
     }
 
-    return finishBuild(config, compilerCtx, buildCtx);
+    const results = await finishBuild(config, compilerCtx, buildCtx);
+
+    if (!config.watch) {
+      config.sys.destroy();
+    }
+
+    return results;
   };
 
   if (watcher) {
@@ -74,7 +80,7 @@ export function getBuildContext(config: Config, compilerCtx: CompilerCtx, watche
 
 
 async function finishBuild(config: Config, compilerCtx: CompilerCtx, buildCtx: BuildCtx) {
-  const buildResults = generateBuildResults(config, compilerCtx, buildCtx);
+  const buildResults = await generateBuildResults(config, compilerCtx, buildCtx);
 
   compilerCtx.lastBuildResults = buildResults;
 

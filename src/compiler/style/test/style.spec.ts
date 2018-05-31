@@ -58,7 +58,7 @@ describe('component-styles', () => {
       expect(r.diagnostics).toEqual([]);
 
       const content = await c.fs.readFile(path.join(root, 'www', 'build', 'app', 'cmp-a.js'));
-      expect(content).toContain('body { color: red; }');
+      expect(content).toContain('color: red');
     });
 
     it('should add mode styles to hashed filename/minified builds', async () => {
@@ -77,20 +77,20 @@ describe('component-styles', () => {
         })
         export class CmpA {}`,
 
-        [path.join(root, 'src', 'cmp-a.ios.css')]: `body{font:ios}`,
-        [path.join(root, 'src', 'cmp-a.md.css')]: `body{font:md}`
+        [path.join(root, 'src', 'cmp-a.ios.css')]: `body{font-family:Helvetica}`,
+        [path.join(root, 'src', 'cmp-a.md.css')]: `body{font-family:Roboto}`
       });
       await c.fs.commit();
 
       const r = await c.build();
       expect(r.diagnostics).toEqual([]);
 
-      const iosContent = await c.fs.readFile(path.join(root, 'www', 'build', 'app', 't.js'));
-      expect(iosContent).toContain(`body{font:ios}`);
+      const iosContent = await c.fs.readFile(path.join(root, 'www', 'build', 'app', 'o.js'));
+      expect(iosContent).toContain(`body{font-family:Helvetica}`);
       expect(iosContent).toContain(`static get styleMode(){return"ios"}`);
 
-      const mdContent = await c.fs.readFile(path.join(root, 'www', 'build', 'app', 'x.js'));
-      expect(mdContent).toContain(`body{font:md}`);
+      const mdContent = await c.fs.readFile(path.join(root, 'www', 'build', 'app', 'd.js'));
+      expect(mdContent).toContain(`body{font-family:Roboto}`);
       expect(mdContent).toContain(`static get styleMode(){return"md"}`);
     });
 
@@ -144,7 +144,7 @@ describe('component-styles', () => {
       expect(r.bundleBuildCount).toBe(1);
 
       const content = await c.fs.readFile(path.join(root, 'www', 'build', 'app', 'cmp-a.js'));
-      expect(content).toContain(`body { color: red; }`);
+      expect(content).toContain(`color: red`);
     });
 
   });

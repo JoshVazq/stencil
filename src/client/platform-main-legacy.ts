@@ -7,16 +7,15 @@ import { createVNodesFromSsr } from '../renderer/vdom/ssr';
 import { createQueueClient } from './queue-client';
 import { CustomStyle } from './polyfills/css-shim/custom-style';
 import { enableEventListener } from '../core/listeners';
+import { ENCAPSULATION } from '../util/constants';
 import { generateDevInspector } from './dev-inspector';
 import { h } from '../renderer/vdom/h';
 import { initCoreComponentOnReady } from '../core/component-on-ready';
 import { initHostElement } from '../core/init-host-element';
-import { initHostSnapshot } from '../core/host-snapshot';
 import { initStyleTemplate } from '../core/styles';
 import { parseComponentLoader } from '../util/data-parse';
 import { proxyController } from '../core/proxy-controller';
 import { queueUpdate } from '../core/update';
-import { useScopedCss } from '../renderer/vdom/encapsulation';
 
 
 export function createPlatformMainLegacy(namespace: string, Context: d.CoreContext, win: d.WindowData, doc: Document, resourcesUrl: string, hydratedCssClass: string, customStyle: CustomStyle) {
@@ -273,9 +272,6 @@ export function createPlatformMainLegacy(namespace: string, Context: d.CoreConte
       elm.mode = domApi.$getAttribute(elm, 'mode') || Context.mode;
     }
 
-    // remember a "snapshot" of this host element's current attributes/child nodes/slots/etc
-    initHostSnapshot(plt.domApi, cmpMeta, elm);
-
     const bundleId = (typeof cmpMeta.bundleIds === 'string') ?
       cmpMeta.bundleIds :
       (cmpMeta.bundleIds as d.BundleIds)[elm.mode];
@@ -315,7 +311,8 @@ export function createPlatformMainLegacy(namespace: string, Context: d.CoreConte
   function requestComponentBundle(cmpMeta: d.ComponentMeta, bundleId: string) {
     // create the url we'll be requesting
     // always use the es5/jsonp callback module
-    requestUrl(resourcesUrl + bundleId + ((useScopedCss(domApi.$supportsShadowDom, cmpMeta) ? '.sc' : '') + '.es5.js'));
+    const useScoped = cmpMeta.encapsulation === ENCAPSULATION.ScopedCss || (cmpMeta.encapsulation === ENCAPSULATION.ShadowDom && !domApi.$supportsShadowDom);
+    requestUrl(resourcesUrl + bundleId + (useScoped ? '.sc' : '') + '.es5.js');
   }
 
 
@@ -369,7 +366,10 @@ export function createPlatformMainLegacy(namespace: string, Context: d.CoreConte
 
   // register all the components now that everything's ready
   (App.components || [])
-    .map(data => parseComponentLoader(data))
+    .map(data => {
+      const cmpMeta = parseComponentLoader(data);
+      return cmpRegistry[cmpMeta.tagNameMeta] = cmpMeta;
+    })
     .forEach(cmpMeta => {
     // es5 way of extending HTMLElement
     function HostElement(self: any) {
