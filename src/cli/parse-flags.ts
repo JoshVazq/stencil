@@ -1,8 +1,8 @@
-import { ConfigFlags } from '../declarations';
+import * as d from '../declarations';
 import { dashToPascalCase } from '../util/helpers';
 
 
-export function parseFlags(process: NodeJS.Process): ConfigFlags {
+export function parseFlags(process: NodeJS.Process): d.ConfigFlags {
   const cmdArgs = getCmdArgs(process);
   const flags: any = {};
 

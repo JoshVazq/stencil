@@ -1,7 +1,7 @@
-import { Config, DevServerClientConfig } from '../declarations';
+import * as d from '../declarations';
 
 
-export async function startDevServer(config: Config, compiler: any) {
+export async function startDevServer(config: d.Config, compiler: any) {
   config.devServer = config.devServer || {};
   config.devServer.startDevServer = true;
 
@@ -9,7 +9,7 @@ export async function startDevServer(config: Config, compiler: any) {
     config.devServer.openBrowser = false;
   }
 
-  const clientConfig: DevServerClientConfig = await compiler.startDevServer();
+  const clientConfig: d.DevServerClientConfig = await compiler.startDevServer();
   config.logger.info(`dev server: ${clientConfig.browserUrl}`);
 
   process.once('SIGINT', () => {
