@@ -1,7 +1,7 @@
 import * as d from '../declarations';
 import { hasError } from './cli-utils';
-import { help } from './task-help';
-import { startDevServer } from './serve';
+import { helpTask } from './task-help';
+import { serverTask } from './task-serve';
 
 
 export async function runTask(process: NodeJS.Process, config: d.Config, compiler: any, flags: d.ConfigFlags) {
@@ -23,11 +23,11 @@ export async function runTask(process: NodeJS.Process, config: d.Config, compile
       return compiler.docs();
 
     case 'serve':
-      return startDevServer(config, compiler);
+      return serverTask(config, compiler);
 
     default:
       config.logger.error(`Invalid stencil command, please see the options below:`);
-      help(process, config.logger);
+      helpTask(process, config.logger);
       process.exit(1);
   }
 }

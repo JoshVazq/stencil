@@ -1,7 +1,7 @@
 import * as d from '../declarations';
 import { Compiler as CompilerType } from '../compiler';
 import { getConfigFilePath } from './cli-utils';
-import { help } from './task-help';
+import { helpTask } from './task-help';
 import { parseFlags } from './parse-flags';
 import { runTask } from './run-task';
 import { startTask } from './task-start';
@@ -15,7 +15,7 @@ export async function run(process: NodeJS.Process, sys: d.StencilSystem, logger:
   const flags = parseFlags(process);
 
   if (flags.help || flags.task === `help`) {
-    help(process, logger);
+    helpTask(process, logger);
     process.exit(0);
   }
 

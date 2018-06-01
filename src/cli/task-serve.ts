@@ -1,7 +1,7 @@
 import * as d from '../declarations';
 
 
-export async function startDevServer(config: d.Config, compiler: any) {
+export async function serverTask(config: d.Config, compiler: any) {
   config.devServer = config.devServer || {};
   config.devServer.startDevServer = true;
 
