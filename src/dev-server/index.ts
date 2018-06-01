@@ -1,17 +1,14 @@
-import { DevServerConfig, DevServerMessage } from '../declarations';
+import * as d from '../declarations';
 import { NodeFs } from '../sys/node/node-fs';
 import { startDevServer } from './start-server';
 import * as path from 'path';
 
 
-// fork-dev-server-process.ts file actually kicks off
-// this file from the main process
-
-async function startServerRequest(config: DevServerConfig) {
+async function startServerRequest(devServerConfig: d.DevServerConfig) {
   try {
     const fs = new NodeFs();
-    config.contentTypes = await loadContentTypes(fs);
-    startDevServer(config, fs);
+    devServerConfig.contentTypes = await loadContentTypes(fs);
+    startDevServer(devServerConfig, fs);
 
   } catch (e) {
     console.error('dev server error', e);
@@ -26,7 +23,7 @@ async function loadContentTypes(fs: NodeFs) {
 }
 
 
-process.on('message', (msg: DevServerMessage) => {
+process.on('message', (msg: d.DevServerMessage) => {
   if (msg.startServerRequest) {
     startServerRequest(msg.startServerRequest);
   }

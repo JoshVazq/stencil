@@ -3,9 +3,9 @@ import { appReset } from './app-update';
 import { initClientWebSocket } from './client-web-socket';
 
 
-export async function initClient(config: d.DevServerClientConfig, ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document) {
+export async function initClient(devServerConfig: d.DevServerClientConfig, ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document) {
   try {
-    if (!config) {
+    if (!devServerConfig) {
       console.error(`invalid client-side dev server config`);
       return;
     }

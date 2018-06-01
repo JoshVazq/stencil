@@ -1,4 +1,4 @@
-import { DevServerConfig, FileSystem, HttpRequest } from '../declarations';
+import * as d from '../declarations';
 import { isStaticDevClient } from './util';
 import { serveFile, serveStaticDevClient } from './serve-file';
 import { serve404, serve500 } from './serve-error';
@@ -8,11 +8,11 @@ import * as path from 'path';
 import * as url from 'url';
 
 
-export function createRequestHandler(config: DevServerConfig, fs: FileSystem) {
+export function createRequestHandler(devServerConfig: d.DevServerConfig, fs: d.FileSystem) {
 
   return async function(incomingReq: http.IncomingMessage, res: http.ServerResponse) {
     try {
-      const req = normalizeHttpRequest(config, incomingReq);
+      const req = normalizeHttpRequest(devServerConfig, incomingReq);
 
       if (req.pathname === '') {
         res.writeHead(302, { 'location': '/' });
@@ -20,36 +20,36 @@ export function createRequestHandler(config: DevServerConfig, fs: FileSystem) {
       }
 
       if (isStaticDevClient(req)) {
-        return serveStaticDevClient(config, fs, req, res);
+        return serveStaticDevClient(devServerConfig, fs, req, res);
       }
 
       try {
         req.stats = await fs.stat(req.filePath);
 
         if (req.stats.isFile()) {
-          return serveFile(config, fs, req, res);
+          return serveFile(devServerConfig, fs, req, res);
         }
 
         if (req.stats.isDirectory()) {
-          return serveDirectoryIndex(config, fs, req, res);
+          return serveDirectoryIndex(devServerConfig, fs, req, res);
         }
 
       } catch (e) {}
 
-      if (isValidHistoryApi(config, req)) {
+      if (isValidHistoryApi(devServerConfig, req)) {
         try {
-          const indexFilePath = path.join(config.root, config.historyApiFallback.index);
+          const indexFilePath = path.join(devServerConfig.root, devServerConfig.historyApiFallback.index);
 
           req.stats = await fs.stat(indexFilePath);
           if (req.stats.isFile()) {
             req.filePath = indexFilePath;
-            return serveFile(config, fs, req, res);
+            return serveFile(devServerConfig, fs, req, res);
           }
 
         } catch (e) {}
       }
 
-      return serve404(config, fs, req, res);
+      return serve404(devServerConfig, fs, req, res);
 
     } catch (e) {
       return serve500(res, e);
@@ -58,8 +58,8 @@ export function createRequestHandler(config: DevServerConfig, fs: FileSystem) {
 }
 
 
-function normalizeHttpRequest(config: DevServerConfig, incomingReq: http.IncomingMessage) {
-  const req: HttpRequest = {
+function normalizeHttpRequest(devServerConfig: d.DevServerConfig, incomingReq: http.IncomingMessage) {
+  const req: d.HttpRequest = {
     method: (incomingReq.method || 'GET').toUpperCase() as any,
     acceptHeader: (incomingReq.headers && typeof incomingReq.headers.accept === 'string' && incomingReq.headers.accept) || '',
     url: (incomingReq.url || '').trim() || ''
@@ -71,7 +71,7 @@ function normalizeHttpRequest(config: DevServerConfig, incomingReq: http.Incomin
   req.pathname = parts.map(part => decodeURIComponent(part)).join('/');
 
   req.filePath = path.normalize(
-    path.join(config.root,
+    path.join(devServerConfig.root,
       path.relative('/', req.pathname)
     )
   );
@@ -80,9 +80,9 @@ function normalizeHttpRequest(config: DevServerConfig, incomingReq: http.Incomin
 }
 
 
-function isValidHistoryApi(config: DevServerConfig, req: HttpRequest) {
-  return !!config.historyApiFallback &&
+function isValidHistoryApi(devServerConfig: d.DevServerConfig, req: d.HttpRequest) {
+  return !!devServerConfig.historyApiFallback &&
          req.method === 'GET' &&
-         (!config.historyApiFallback.disableDotRule && !req.pathname.includes('.')) &&
+         (!devServerConfig.historyApiFallback.disableDotRule && !req.pathname.includes('.')) &&
          req.acceptHeader.includes('text/html');
 }

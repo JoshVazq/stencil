@@ -1,9 +1,9 @@
-import { DevServerConfig, FileSystem, HttpRequest } from '../declarations';
+import * as d from '../declarations';
 import * as http  from 'http';
 import * as path  from 'path';
 
 
-export async function serve404(config: DevServerConfig, fs: FileSystem, req: HttpRequest, res: http.ServerResponse) {
+export async function serve404(config: d.DevServerConfig, fs: d.FileSystem, req: d.HttpRequest, res: http.ServerResponse) {
   try {
     const headers = {
       'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
@@ -24,7 +24,7 @@ export async function serve404(config: DevServerConfig, fs: FileSystem, req: Htt
       ].join('\n');
 
     } else  {
-      const tmpl404 = await fs.readFile(path.join(config.devServerDir, 'templates/404.html'));
+      const tmpl404 = await fs.readFile(path.join(config.devServerDir, 'templates', '404.html'));
       content = tmpl404.replace(
         '{content}',
         `File not found: ${req.pathname}`

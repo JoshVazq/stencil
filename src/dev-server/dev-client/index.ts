@@ -9,4 +9,4 @@ const ctx: d.DevServerClientContext = {
   isInitialDevServerLoad: isInitialDevServerLoad(window.location.pathname)
 };
 
-initClient(window.$devServer, ctx, window, document);
+initClient(window['s-dev-server'], ctx, window, document);

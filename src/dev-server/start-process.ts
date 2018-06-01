@@ -1,4 +1,4 @@
-import { CompilerCtx, Config, DevServerClientConfig, DevServerMessage } from '../declarations';
+import * as d from '../declarations';
 import { generateBuildResults } from './build-results';
 
 
@@ -8,14 +8,14 @@ import { generateBuildResults } from './build-results';
  * it is not apart of the dev-server/index.js bundle
  */
 
-export function startDevServerProcess(config: Config, compilerCtx: CompilerCtx): Promise<DevServerClientConfig> {
+export function startDevServerProcess(config: d.Config, compilerCtx: d.CompilerCtx): Promise<d.DevServerClientConfig> {
   return new Promise(resolve => {
     const path = require('path');
     const fork = require('child_process').fork;
 
     // using the path stuff below because after the the bundles are created
     // then these files are no longer relative to how they are in the src directory
-    config.devServer.devServerDir = path.join(__dirname, '../dev-server');
+    config.devServer.devServerDir = path.join(__dirname, '..', 'dev-server');
 
     // get the path of the dev server module
     const program = require.resolve(path.join(config.devServer.devServerDir, 'index.js'));
@@ -40,14 +40,14 @@ export function startDevServerProcess(config: Config, compilerCtx: CompilerCtx):
       serverProcess.kill();
     });
 
-    serverProcess.on('message', (msg: DevServerMessage) => {
+    serverProcess.on('message', (msg: d.DevServerMessage) => {
       // the CLI has received a message from the child server process
       cliReceivedMessageFromServer(config, compilerCtx, serverProcess, msg, resolve);
     });
 
     compilerCtx.events.subscribe('build', (buildResults) => {
       // a compiler build has finished
-      const msg: DevServerMessage = {
+      const msg: d.DevServerMessage = {
         buildResults: generateBuildResults(buildResults)
       };
 
@@ -57,7 +57,7 @@ export function startDevServerProcess(config: Config, compilerCtx: CompilerCtx):
 
     // have the CLI is send a message to the child server process
     // to start the http and web socket server
-    const msg: DevServerMessage = {
+    const msg: d.DevServerMessage = {
       startServerRequest: config.devServer
     };
     serverProcess.send(msg);
@@ -65,7 +65,7 @@ export function startDevServerProcess(config: Config, compilerCtx: CompilerCtx):
 }
 
 
-function cliReceivedMessageFromServer(config: Config, compilerCtx: CompilerCtx, serverProcess: any, msg: DevServerMessage, resolve: Function) {
+function cliReceivedMessageFromServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess: any, msg: d.DevServerMessage, resolve: Function) {
   if (msg.startServerResponse) {
     // received a message from the child process that the server has successfully started
     config.devServer.ssl = msg.startServerResponse.ssl;
@@ -86,7 +86,7 @@ function cliReceivedMessageFromServer(config: Config, compilerCtx: CompilerCtx, 
     // we received a request to send up the latest build results
     if (compilerCtx.lastBuildResults) {
       // we do have build results, so let's send them to the child process
-      const msg: DevServerMessage = {
+      const msg: d.DevServerMessage = {
         buildResults: compilerCtx.lastBuildResults
       };
       serverProcess.send(msg);

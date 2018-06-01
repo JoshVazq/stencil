@@ -96,7 +96,7 @@ if (success) {
 
   // copy opn's xdg-open file
   const xdgOpenSrcPath = glob.sync('xdg-open', {
-    cwd: path.join(__dirname, '../node_modules/opn'),
+    cwd: path.join(__dirname, '..', 'node_modules/opn'),
     absolute: true
   });
   if (xdgOpenSrcPath.length !== 1) {

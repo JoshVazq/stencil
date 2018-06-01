@@ -1,36 +1,36 @@
-import { DevServerClientConfig, DevServerConfig, HttpRequest } from '../declarations';
+import * as d from '../declarations';
 
 
-export function getClientSideConfig(config: DevServerConfig) {
-  const browserUrl = getBrowserUrl(config);
+export function getClientSideConfig(devServerConfig: d.DevServerConfig) {
+  const browserUrl = getBrowserUrl(devServerConfig);
   const openUrl = browserUrl + UNREGISTER_SW_URL;
 
-  const clientConfig: DevServerClientConfig = {
-    ssl: config.ssl,
-    address: config.address,
-    port: config.port,
+  const clientConfig: d.DevServerClientConfig = {
+    ssl: devServerConfig.ssl,
+    address: devServerConfig.address,
+    port: devServerConfig.port,
     browserUrl: browserUrl,
     openUrl: openUrl,
-    liveReload: config.liveReload
+    liveReload: devServerConfig.liveReload
   };
 
   return clientConfig;
 }
 
-export function getBrowserUrl(config: DevServerConfig) {
-  const address = (config.address === '0.0.0.0') ? 'localhost' : config.address;
-  const port = (config.port === 80 || config.port === 443) ? '' : (':' + config.port);
-  return `${config.ssl ? 'https' : 'http'}://${address}${port}`;
+export function getBrowserUrl(devServerConfig: d.DevServerConfig) {
+  const address = (devServerConfig.address === '0.0.0.0') ? 'localhost' : devServerConfig.address;
+  const port = (devServerConfig.port === 80 || devServerConfig.port === 443) ? '' : (':' + devServerConfig.port);
+  return `${devServerConfig.ssl ? 'https' : 'http'}://${address}${port}`;
 }
 
-export function getContentType(devServer: DevServerConfig, filePath: string) {
+export function getContentType(devServerConfig: d.DevServerConfig, filePath: string) {
   const last = filePath.replace(/^.*[/\\]/, '').toLowerCase();
   const ext = last.replace(/^.*\./, '').toLowerCase();
 
   const hasPath = last.length < filePath.length;
   const hasDot = ext.length < last.length - 1;
 
-  return ((hasDot || !hasPath) && devServer.contentTypes[ext]) || 'application/octet-stream';
+  return ((hasDot || !hasPath) && devServerConfig.contentTypes[ext]) || 'application/octet-stream';
 }
 
 export function isHtmlFile(filePath: string) {
@@ -38,7 +38,7 @@ export function isHtmlFile(filePath: string) {
   return (filePath.endsWith('.html') || filePath.endsWith('.htm'));
 }
 
-export function isStaticDevClient(req: HttpRequest) {
+export function isStaticDevClient(req: d.HttpRequest) {
   return req.pathname.startsWith(DEV_SERVER_URL);
 }
 

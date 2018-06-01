@@ -1,6 +1,8 @@
-import { DevServerMessage, DevServerSocketConstructor } from '../declarations';
+import * as d from '../declarations';
 import * as http from 'http';
-const WebSocket: DevServerSocketConstructor = require('faye-websocket');
+
+
+const WebSocket: d.DevServerSocketConstructor = require('faye-websocket');
 
 
 export function createWebSocketServer(server: http.Server) {
@@ -15,7 +17,7 @@ export function createWebSocketServer(server: http.Server) {
 function onWebSocketUpgrade(request: any, socket: any, body: any) {
   let serverWs = new WebSocket(request, socket, body, ['xmpp']);
 
-  function onMessageFromCli(msg: DevServerMessage) {
+  function onMessageFromCli(msg: d.DevServerMessage) {
     // the server process has received a message from the cli's main thread
     // pass it to the server's web socket to send to the browser
     if (serverWs) {
@@ -23,7 +25,7 @@ function onWebSocketUpgrade(request: any, socket: any, body: any) {
     }
   }
 
-  serverWs.on('message', (event) => {
+  serverWs.on('message', (event: any) => {
     // the server process has received a message from the browser
     // pass the message received from the browser to the main cli process
     process.send(JSON.parse(event.data));

@@ -36,7 +36,7 @@ export interface DevServerClientContext {
 
 
 export interface DevClientWindow extends Window {
-  $devServer: DevServerClientConfig;
+  's-dev-server': DevServerClientConfig;
   MozWebSocket: new (socketUrl: string, protos: string[]) => DevClientSocket;
   WebSocket: new (socketUrl: string, protos: string[]) => DevClientSocket;
 }

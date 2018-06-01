@@ -1,22 +1,22 @@
+import * as d from '../declarations';
 import { createHttpServer } from './server-http';
 import { createWebSocketServer } from './server-web-socket';
-import { DevServerConfig, DevServerMessage, FileSystem } from '../declarations';
 import { findClosestOpenPort } from './find-closest-port';
 import { getClientSideConfig } from './util';
 
 
-export async function startDevServer(config: DevServerConfig, fs: FileSystem) {
+export async function startDevServer(devServerConfig: d.DevServerConfig, fs: d.FileSystem) {
   try {
-    config.port = await findClosestOpenPort(config.address, config.port);
+    devServerConfig.port = await findClosestOpenPort(devServerConfig.address, devServerConfig.port);
 
-    const server = await createHttpServer(config, fs);
+    const server = await createHttpServer(devServerConfig, fs);
 
     createWebSocketServer(server);
 
-    server.listen(config.port, config.address);
+    server.listen(devServerConfig.port, devServerConfig.address);
 
-    const msg: DevServerMessage = {
-      startServerResponse: getClientSideConfig(config)
+    const msg: d.DevServerMessage = {
+      startServerResponse: getClientSideConfig(devServerConfig)
     };
 
     process.send(msg);

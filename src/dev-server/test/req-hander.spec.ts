@@ -14,8 +14,8 @@ describe('request-handler', async () => {
   let fs: TestingFs;
   let req: http.ServerRequest;
   let res: TestServerResponse;
-  const tmplDirPath = path.join(__dirname, '../templates/directory-index.html');
-  const tmpl404Path = path.join(__dirname, '../templates/404.html');
+  const tmplDirPath = path.join(__dirname, '..', 'templates', 'directory-index.html');
+  const tmpl404Path = path.join(__dirname, '..', 'templates', '404.html');
   const tmplDir = nodeFs.readFileSync(tmplDirPath, 'utf8');
   const tmpl404 = nodeFs.readFileSync(tmpl404Path, 'utf8');
   const contentTypes = {
@@ -38,8 +38,8 @@ describe('request-handler', async () => {
     };
 
     await fs.mkdir(stencilConfig.devServer.root);
-    await fs.writeFile(path.join(stencilConfig.devServer.devServerDir, 'templates/404.html'), tmpl404);
-    await fs.writeFile(path.join(stencilConfig.devServer.devServerDir, 'templates/directory-index.html'), tmplDir);
+    await fs.writeFile(path.join(stencilConfig.devServer.devServerDir, 'templates', '404.html'), tmpl404);
+    await fs.writeFile(path.join(stencilConfig.devServer.devServerDir, 'templates', 'directory-index.html'), tmplDir);
 
     config = validateDevServer(stencilConfig);
     req = {} as any;

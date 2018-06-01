@@ -1,4 +1,4 @@
-import { DevServerConfig, FileSystem, HttpRequest } from '../declarations';
+import * as d from '../declarations';
 import { DEV_SERVER_URL, getContentType, isHtmlFile, isInitialDevServerLoad } from './util';
 import { injectDevServerScripts } from './inject-scripts';
 import { serve404 } from './serve-error';
@@ -7,19 +7,19 @@ import * as path from 'path';
 import { Buffer } from 'buffer';
 
 
-export async function serveFile(config: DevServerConfig, fs: FileSystem, req: HttpRequest, res: http.ServerResponse) {
+export async function serveFile(devServerConfig: d.DevServerConfig, fs: d.FileSystem, req: d.HttpRequest, res: http.ServerResponse) {
   try {
     if (isHtmlFile(req.filePath)) {
       // easy text file, use the internal cache
       let content = await fs.readFile(req.filePath);
 
       // auto inject our dev server script
-      content += `${injectDevServerScripts(config)}`;
+      content += `${injectDevServerScripts(devServerConfig)}`;
 
       res.writeHead(200, {
         'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
         'Expires': '0',
-        'Content-Type': getContentType(config, req.filePath),
+        'Content-Type': getContentType(devServerConfig, req.filePath),
         'Content-Length': Buffer.byteLength(content, 'utf8')
       });
 
@@ -31,7 +31,7 @@ export async function serveFile(config: DevServerConfig, fs: FileSystem, req: Ht
       res.writeHead(200, {
         'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
         'Expires': '0',
-        'Content-Type': getContentType(config, req.filePath),
+        'Content-Type': getContentType(devServerConfig, req.filePath),
         'Content-Length': req.stats.size
       });
 
@@ -39,15 +39,15 @@ export async function serveFile(config: DevServerConfig, fs: FileSystem, req: Ht
     }
 
   } catch (e) {
-    return serve404(config, fs, req, res);
+    return serve404(devServerConfig, fs, req, res);
   }
 }
 
 
-export async function serveStaticDevClient(config: DevServerConfig, fs: FileSystem, req: HttpRequest, res: http.ServerResponse) {
+export async function serveStaticDevClient(config: d.DevServerConfig, fs: d.FileSystem, req: d.HttpRequest, res: http.ServerResponse) {
   try {
     if (isInitialDevServerLoad(req.pathname)) {
-      req.filePath = path.join(config.devServerDir, 'templates/initial-load.html');
+      req.filePath = path.join(config.devServerDir, 'templates', 'initial-load.html');
 
     } else {
       const staticFile = req.pathname.replace(DEV_SERVER_URL + '/', '');
