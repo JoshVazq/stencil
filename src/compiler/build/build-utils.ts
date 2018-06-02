@@ -1,11 +1,12 @@
-import { BuildCtx, CompilerCtx, Config, WatcherResults } from '../../declarations';
+import * as d from '../../declarations';
 import { catchError, hasError } from '../util';
 import { generateBuildResults } from './build-results';
 import { generateBuildStats } from './build-stats';
+import { getBrowserUrl } from '../../dev-server/util';
 import { initWatcher } from '../watcher/watcher-init';
 
 
-export function getBuildContext(config: Config, compilerCtx: CompilerCtx, watcher: WatcherResults) {
+export function getBuildContext(config: d.Config, compilerCtx: d.CompilerCtx, watcher: d.WatcherResults) {
   // do a full build if there is no watcher
   // or the watcher said the config has updated
   // or we've never had a successful build yet
@@ -20,7 +21,7 @@ export function getBuildContext(config: Config, compilerCtx: CompilerCtx, watche
   compilerCtx.activeBuildId++;
 
   // data for one build
-  const buildCtx: BuildCtx = {
+  const buildCtx: d.BuildCtx = {
     requiresFullBuild: requiresFullBuild,
     buildId: compilerCtx.activeBuildId,
     componentRefs: [],
@@ -79,7 +80,7 @@ export function getBuildContext(config: Config, compilerCtx: CompilerCtx, watche
 }
 
 
-async function finishBuild(config: Config, compilerCtx: CompilerCtx, buildCtx: BuildCtx) {
+async function finishBuild(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
   const buildResults = await generateBuildResults(config, compilerCtx, buildCtx);
 
   compilerCtx.lastBuildResults = buildResults;
@@ -110,8 +111,9 @@ async function finishBuild(config: Config, compilerCtx: CompilerCtx, buildCtx: B
     compilerCtx.lastBuildHadError = false;
   }
 
-  if (!compilerCtx.isRebuild && config.devServer.startDevServer) {
-    config.logger.info(`dev server: ${config.devServer.browserUrl}`);
+  if (!compilerCtx.isRebuild && config.devServer && config.flags.serve) {
+    const browserUrl = getBrowserUrl(config.devServer);
+    config.logger.info(`dev server: ${browserUrl}`);
   }
 
   // print out the time it took to build
@@ -141,7 +143,7 @@ async function finishBuild(config: Config, compilerCtx: CompilerCtx, buildCtx: B
 }
 
 
-function shouldAbort(ctx: CompilerCtx, buildCtx: BuildCtx) {
+function shouldAbort(ctx: d.CompilerCtx, buildCtx: d.BuildCtx) {
   if (ctx.activeBuildId > buildCtx.buildId || buildCtx.aborted) {
     buildCtx.aborted = true;
     return true;

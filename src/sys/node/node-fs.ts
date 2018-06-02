@@ -1,8 +1,8 @@
-import { FileSystem, FsStats } from '../../declarations';
+import * as d from '../../declarations';
 import * as fs from 'fs';
 
 
-export class NodeFs implements FileSystem {
+export class NodeFs implements d.FileSystem {
 
   copyFile(src: string, dest: string) {
     return new Promise<void>((resolve, reject) => {
@@ -74,7 +74,7 @@ export class NodeFs implements FileSystem {
   }
 
   stat(itemPath: string) {
-    return new Promise<FsStats>((resolve, reject) => {
+    return new Promise<d.FsStats>((resolve, reject) => {
       fs.stat(itemPath, (err, stats) => {
         if (err) {
           reject(err);
@@ -85,7 +85,7 @@ export class NodeFs implements FileSystem {
     });
   }
 
-  statSync(itemPath: string): FsStats {
+  statSync(itemPath: string): d.FsStats {
     return fs.statSync(itemPath);
   }
 

@@ -6,10 +6,9 @@ export function getClientSideConfig(devServerConfig: d.DevServerConfig) {
   const openUrl = browserUrl + UNREGISTER_SW_URL;
 
   const clientConfig: d.DevServerClientConfig = {
-    ssl: devServerConfig.ssl,
+    protocol: devServerConfig.protocol,
     address: devServerConfig.address,
     port: devServerConfig.port,
-    browserUrl: browserUrl,
     openUrl: openUrl,
     liveReload: devServerConfig.liveReload
   };
@@ -18,9 +17,9 @@ export function getClientSideConfig(devServerConfig: d.DevServerConfig) {
 }
 
 export function getBrowserUrl(devServerConfig: d.DevServerConfig) {
-  const address = (devServerConfig.address === '0.0.0.0') ? 'localhost' : devServerConfig.address;
+  const address = (devServerConfig.address === `0.0.0.0`) ? `localhost` : devServerConfig.address;
   const port = (devServerConfig.port === 80 || devServerConfig.port === 443) ? '' : (':' + devServerConfig.port);
-  return `${devServerConfig.ssl ? 'https' : 'http'}://${address}${port}`;
+  return `${devServerConfig.protocol}://${address}${port}`;
 }
 
 export function getContentType(devServerConfig: d.DevServerConfig, filePath: string) {

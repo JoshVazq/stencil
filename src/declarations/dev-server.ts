@@ -3,29 +3,25 @@ import * as d from './index';
 
 export interface DevServerConfig {
   address?: string;
-  broadcast?: boolean;
   contentTypes?: { [ext: string]: string };
   devServerDir?: string;
   gzip?: boolean;
   historyApiFallback?: HistoryApiFallback;
-  port?: number;
   liveReload?: boolean;
   openBrowser?: boolean;
-  root?: string;
-  ssl?: boolean;
-  startDevServer?: boolean;
-  browserUrl?: string;
   openUrl?: string;
+  port?: number;
+  protocol?: 'http' | 'https';
+  root?: string;
 }
 
 
 export interface DevServerClientConfig {
-  browserUrl: string;
-  openUrl: string;
-  ssl: boolean;
   address: string;
-  port: number;
   liveReload: boolean;
+  openUrl: string;
+  port: number;
+  protocol: 'http' | 'https';
 }
 
 

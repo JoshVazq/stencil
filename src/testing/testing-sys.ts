@@ -17,7 +17,8 @@ export interface NodeSystemSystemConstructor {
 export class TestingSystem extends NodeSystem {
 
   constructor() {
-    super(new TestingFs(), 0);
+    const fs = new TestingFs();
+    super(fs, 0);
     this.createWatcher = null;
   }
 
@@ -43,7 +44,7 @@ export class TestingSystem extends NodeSystem {
   }
 
   tmpdir() {
-    return '/tmp/testing';
+    return path.join(path.resolve('/'), 'tmp', 'testing');
   }
 
 }

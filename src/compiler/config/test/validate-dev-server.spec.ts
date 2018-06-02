@@ -9,15 +9,18 @@ describe('validateDevServer', () => {
   let config: Config;
   const logger = mockLogger();
   const sys = mockStencilSystem();
+  const root = path.resolve('/');
 
   beforeEach(() => {
     config = {
       sys: sys,
       logger: logger,
-      rootDir: '/User/some/path/',
+      rootDir: path.join(root, 'some', 'path'),
       devServer: {
-        startDevServer: true,
         contentTypes: {}
+      },
+      flags: {
+        serve: true
       }
     };
   });
@@ -34,32 +37,21 @@ describe('validateDevServer', () => {
     expect(config.devServer.address).toBe('123.123.123.123');
   });
 
-  it('should default broadcast', () => {
-    validateConfig(config);
-    expect(config.devServer.broadcast).toBe(false);
-  });
-
-  it('should set broadcast', () => {
-    config.devServer.broadcast = true;
-    validateConfig(config);
-    expect(config.devServer.broadcast).toBe(true);
-  });
-
   it('should default root', () => {
     validateConfig(config);
-    expect(config.devServer.root).toBe('/User/some/path/www');
+    expect(config.devServer.root).toBe(path.join(root, 'some', 'path', 'www'));
   });
 
   it('should set relative root', () => {
     config.devServer.root = 'my-rel-root';
     validateConfig(config);
-    expect(config.devServer.root).toBe('/User/some/path/my-rel-root');
+    expect(config.devServer.root).toBe(path.join(root, 'some', 'path', 'my-rel-root'));
   });
 
   it('should set absolute root', () => {
-    config.devServer.root = '/User/some/path/my-abs-root';
+    config.devServer.root = path.join(root, 'some', 'path', 'my-abs-root');
     validateConfig(config);
-    expect(config.devServer.root).toBe('/User/some/path/my-abs-root');
+    expect(config.devServer.root).toBe(path.join(root, 'some', 'path', 'my-abs-root'));
   });
 
   it('should default gzip', () => {
@@ -125,37 +117,20 @@ describe('validateDevServer', () => {
     expect(config.devServer.openBrowser).toBe(false);
   });
 
-  it('should default ssl', () => {
+  it('should default http protocol', () => {
     validateConfig(config);
-    expect(config.devServer.ssl).toBe(false);
+    expect(config.devServer.protocol).toBe('http');
   });
 
-  it('should set ssl', () => {
-    config.devServer.ssl = true;
+  it('should set https protocol', () => {
+    config.devServer.protocol = 'https';
     validateConfig(config);
-    expect(config.devServer.ssl).toBe(true);
-  });
-
-  it('should default unregisterServiceWorker', () => {
-    validateConfig(config);
-    expect(config.devServer.unregisterServiceWorker).toBe(true);
-  });
-
-  it('should set unregisterServiceWorker', () => {
-    config.devServer.unregisterServiceWorker = false;
-    validateConfig(config);
-    expect(config.devServer.unregisterServiceWorker).toBe(false);
+    expect(config.devServer.protocol).toBe('https');
   });
 
   it('should default protocol http', () => {
     validateConfig(config);
     expect(config.devServer.protocol).toBe('http');
-  });
-
-  it('should set protocol https', () => {
-    config.devServer.ssl = true;
-    validateConfig(config);
-    expect(config.devServer.protocol).toBe('https');
   });
 
 });

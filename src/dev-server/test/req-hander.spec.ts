@@ -29,9 +29,9 @@ describe('request-handler', async () => {
     fs = new TestingFs();
 
     const stencilConfig = mockConfig();
+    stencilConfig.flags.serve = true;
 
     stencilConfig.devServer = {
-      startDevServer: true,
       contentTypes: contentTypes,
       devServerDir: path.join(__dirname, '..'),
       root: '/www'

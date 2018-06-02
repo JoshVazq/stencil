@@ -1,19 +1,19 @@
-import { BuildResults, CompilerCtx, CompilerEventName, Config, DevServerClientConfig, Diagnostic, InMemoryFileSystem } from '../declarations';
+import * as d from '../declarations';
 import { build } from './build/build';
 import { catchError } from './util';
 import { docs } from './docs/docs';
 import { getCompilerCtx } from './build/compiler-ctx';
+import { getBrowserUrl } from '../dev-server/util';
 import { startDevServerProcess } from '../dev-server/start-process';
 import { validateConfig } from '../compiler/config/validate-config';
-import { validateDevServer } from './config/validate-dev-server';
 
 
 export class Compiler {
-  protected ctx: CompilerCtx;
+  protected ctx: d.CompilerCtx;
   isValid: boolean;
-  config: Config;
+  config: d.Config;
 
-  constructor(rawConfig: Config) {
+  constructor(rawConfig: d.Config) {
     [ this.isValid, this.config ] = isValid(rawConfig);
 
     if (this.isValid) {
@@ -27,38 +27,36 @@ export class Compiler {
       this.config.logger.info(this.config.logger.cyan(startupMsg));
       this.config.logger.debug(`compiler runtime: ${this.config.sys.compiler.runtime}`);
 
-      if (this.config.devServer.startDevServer) {
+      if (this.config.flags.serve) {
         this.startDevServer();
       }
-
-      this.config.logger.info(this.config.logger.cyan(startupMsg));
-      this.config.logger.debug(`compiler runtime: ${this.config.sys.compiler.runtime}`);
     }
   }
 
-  startDevServer(): Promise<DevServerClientConfig> {
+  async startDevServer() {
     if (this.config.sys.name !== 'node') {
       throw new Error(`Dev Server only availabe in node`);
     }
 
-    validateDevServer(this.config);
-
-    return startDevServerProcess(this.config, this.ctx);
+    const devServerConfig = await startDevServerProcess(this.config, this.ctx);
+    return {
+      browserUrl: getBrowserUrl(devServerConfig)
+    };
   }
 
   build() {
     return build(this.config, this.ctx);
   }
 
-  on(eventName: 'build', cb: (buildResults: BuildResults) => void): Function;
-  on(eventName: 'rebuild', cb: (buildResults: BuildResults) => void): Function;
+  on(eventName: 'build', cb: (buildResults: d.BuildResults) => void): Function;
+  on(eventName: 'rebuild', cb: (buildResults: d.BuildResults) => void): Function;
   on(eventName: any, cb: any) {
     return this.ctx.events.subscribe(eventName, cb);
   }
 
-  once(eventName: 'build'): Promise<BuildResults>;
-  once(eventName: 'rebuild'): Promise<BuildResults>;
-  once(eventName: CompilerEventName) {
+  once(eventName: 'build'): Promise<d.BuildResults>;
+  once(eventName: 'rebuild'): Promise<d.BuildResults>;
+  once(eventName: d.CompilerEventName) {
     return new Promise<any>(resolve => {
       const off = this.ctx.events.subscribe(eventName as any, (...args: any[]) => {
         off();
@@ -76,7 +74,7 @@ export class Compiler {
   trigger(eventName: 'fileDelete', path: string): void;
   trigger(eventName: 'dirAdd', path: string): void;
   trigger(eventName: 'dirDelete', path: string): void;
-  trigger(eventName: CompilerEventName, ...args: any[]) {
+  trigger(eventName: d.CompilerEventName, ...args: any[]) {
     args.unshift(eventName);
     this.ctx.events.emit.apply(this.ctx.events, args);
   }
@@ -85,7 +83,7 @@ export class Compiler {
     return docs(this.config, this.ctx);
   }
 
-  get fs(): InMemoryFileSystem {
+  get fs(): d.InMemoryFileSystem {
     return this.ctx.fs;
   }
 
@@ -99,7 +97,7 @@ export class Compiler {
 
 }
 
-function isValid(config: Config): [ boolean, Config | null] {
+function isValid(config: d.Config): [ boolean, d.Config | null] {
   try {
     // validate the build config
     validateConfig(config, true);
@@ -107,7 +105,7 @@ function isValid(config: Config): [ boolean, Config | null] {
 
   } catch (e) {
     if (config.logger) {
-      const diagnostics: Diagnostic[] = [];
+      const diagnostics: d.Diagnostic[] = [];
       catchError(diagnostics, e);
       config.logger.printDiagnostics(diagnostics);
 

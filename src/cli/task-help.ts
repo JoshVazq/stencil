@@ -11,6 +11,7 @@ export function helpTask(process: NodeJS.Process, logger: d.Logger) {
 
       ${logger.green('--dev')} ${logger.dim('..................')} Execute a development build
       ${logger.green('--watch')} ${logger.dim('................')} Execute a build in watch mode
+      ${logger.green('--serve')} ${logger.dim('................')} Start a local dev server
       ${logger.green('--prerender')} ${logger.dim('............')} Prerender URLs
       ${logger.green('--stats')} ${logger.dim('................')} Write stencil-stats.json file
       ${logger.green('--log')} ${logger.dim('..................')} Write stencil-build.log file
@@ -20,7 +21,7 @@ export function helpTask(process: NodeJS.Process, logger: d.Logger) {
 
   ${logger.bold('Examples:')}
 
-    ${p} ${logger.green('stencil build --dev --watch')}
+    ${p} ${logger.green('stencil build --dev --watch --serve')}
     ${p} ${logger.green('stencil build --prerender')}
     ${p} ${logger.green('stencil start myapp')}
 

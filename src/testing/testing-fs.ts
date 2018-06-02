@@ -1,9 +1,9 @@
-import { FileSystem, FsStats } from '../declarations';
+import * as d from '../declarations';
 import { normalizePath } from '../compiler/util';
 import * as path from 'path';
 
 
-export class TestingFs implements FileSystem {
+export class TestingFs implements d.FileSystem {
   data: {[filePath: string]: { isFile: boolean; isDirectory: boolean; content?: string; } } = {};
 
   diskWrites = 0;
@@ -120,7 +120,7 @@ export class TestingFs implements FileSystem {
   }
 
   stat(itemPath: string) {
-    return new Promise<FsStats>((resolve, reject) => {
+    return new Promise<d.FsStats>((resolve, reject) => {
       setTimeout(() => {
         try {
           resolve(this.statSync(itemPath));
@@ -141,7 +141,7 @@ export class TestingFs implements FileSystem {
         isDirectory: () => isDirectory,
         isFile: () => isFile,
         size: this.data[itemPath].content ? this.data[itemPath].content.length : 0
-      } as FsStats;
+      } as d.FsStats;
     }
     throw new Error(`stat, path doesn't exist: ${itemPath}`);
   }

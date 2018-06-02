@@ -8,12 +8,11 @@ export function validateDevServer(config: d.Config) {
   setBooleanConfig(config.devServer, 'startDevServer', null, false);
 
   setStringConfig(config.devServer, 'address', '0.0.0.0');
-  setBooleanConfig(config.devServer, 'broadcast', null, false);
-  setBooleanConfig(config.devServer, 'gzip', null, true);
   setNumberConfig(config.devServer, 'port', null, 3333);
+  setBooleanConfig(config.devServer, 'gzip', null, true);
   setBooleanConfig(config.devServer, 'liveReload', null, true);
   setBooleanConfig(config.devServer, 'openBrowser', null, true);
-  setBooleanConfig(config.devServer, 'ssl', null, false);
+  setStringConfig(config.devServer, 'protocol', 'http');
 
   if (config.devServer.historyApiFallback !== null && config.devServer.historyApiFallback !== false) {
     config.devServer.historyApiFallback = config.devServer.historyApiFallback || {};
@@ -27,18 +26,20 @@ export function validateDevServer(config: d.Config) {
     }
   }
 
-  let wwwDir: string = null;
-  const outputTarget: d.OutputTargetWww = config.outputTargets.find(o => o.type === 'www');
-  if (!outputTarget) {
-    throw new Error(`dev server missing www output target`);
-  }
+  if (config.flags && config.flags.serve) {
+    let wwwDir: string = null;
+    const outputTarget: d.OutputTargetWww = config.outputTargets.find(o => o.type === 'www');
+    if (!outputTarget) {
+      throw new Error(`dev server missing www output target`);
+    }
 
-  wwwDir = outputTarget.dir;
+    wwwDir = outputTarget.dir;
 
-  setStringConfig(config.devServer, 'root', wwwDir);
+    setStringConfig(config.devServer, 'root', wwwDir);
 
-  if (!config.sys.path.isAbsolute(config.devServer.root)) {
-    config.devServer.root = pathJoin(config, config.rootDir, config.devServer.root);
+    if (!config.sys.path.isAbsolute(config.devServer.root)) {
+      config.devServer.root = pathJoin(config, config.rootDir, config.devServer.root);
+    }
   }
 
   return config.devServer;

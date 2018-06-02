@@ -68,10 +68,9 @@ export function startDevServerProcess(config: d.Config, compilerCtx: d.CompilerC
 function cliReceivedMessageFromServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess: any, msg: d.DevServerMessage, resolve: Function) {
   if (msg.startServerResponse) {
     // received a message from the child process that the server has successfully started
-    config.devServer.ssl = msg.startServerResponse.ssl;
+    config.devServer.protocol = msg.startServerResponse.protocol;
     config.devServer.address = msg.startServerResponse.address;
     config.devServer.port = msg.startServerResponse.port;
-    config.devServer.browserUrl = msg.startServerResponse.browserUrl;
 
     if (config.devServer.openBrowser) {
       config.sys.open(msg.startServerResponse.openUrl);

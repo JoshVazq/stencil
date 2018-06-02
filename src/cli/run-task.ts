@@ -12,7 +12,7 @@ export async function runTask(process: NodeJS.Process, config: d.Config, compile
         process.exit(1);
       }
 
-      if (config.watch || (config.devServer && config.devServer.startDevServer)) {
+      if (config.watch || (config.devServer && config.flags.serve)) {
         process.once('SIGINT', () => {
           process.exit(0);
         });

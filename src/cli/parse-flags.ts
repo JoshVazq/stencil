@@ -30,7 +30,6 @@ export function parseFlags(process: NodeJS.Process): d.ConfigFlags {
         flags[flagKey] = true;
       }
     });
-
   });
 
   ARG_OPTS.string.forEach(stringName => {
@@ -62,7 +61,37 @@ export function parseFlags(process: NodeJS.Process): d.ConfigFlags {
         }
       }
     }
+  });
 
+  ARG_OPTS.number.forEach(numberName => {
+
+    const alias = (ARG_OPTS.alias as any)[numberName];
+    const flagKey = configCase(numberName);
+
+    flags[flagKey] = null;
+
+    for (let i = 0; i < cmdArgs.length; i++) {
+      const cmdArg = cmdArgs[i];
+
+      if (cmdArg.startsWith(`--${numberName}=`)) {
+        const values = cmdArg.split('=');
+        values.shift();
+        flags[flagKey] = parseInt(values.join(''), 10);
+
+      } else if (cmdArg === `--${numberName}`) {
+        flags[flagKey] = parseInt(cmdArgs[i + 1], 10);
+
+      } else if (alias) {
+        if (cmdArg.startsWith(`-${alias}=`)) {
+          const values = cmdArg.split('=');
+          values.shift();
+          flags[flagKey] = parseInt(values.join(''), 10);
+
+        } else if (cmdArg === `-${alias}`) {
+          flags[flagKey] = parseInt(cmdArgs[i + 1], 10);
+        }
+      }
+    }
   });
 
   return flags;
@@ -85,10 +114,14 @@ const ARG_OPTS = {
     'log',
     'prerender',
     'prod',
+    'serve',
     'skip-node-check',
     'stats',
     'version',
     'watch'
+  ],
+  number: [
+    'port'
   ],
   string: [
     'config',
@@ -98,6 +131,7 @@ const ARG_OPTS = {
   alias: {
     'config': 'c',
     'help': 'h',
+    'port': 'p',
     'version': 'v'
   }
 };
