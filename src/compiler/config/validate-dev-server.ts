@@ -12,7 +12,8 @@ export function validateDevServer(config: d.Config) {
   setBooleanConfig(config.devServer, 'gzip', null, true);
   setBooleanConfig(config.devServer, 'liveReload', null, true);
   setBooleanConfig(config.devServer, 'openBrowser', null, true);
-  setStringConfig(config.devServer, 'protocol', 'http');
+
+  validateProtocol(config.devServer);
 
   if (config.devServer.historyApiFallback !== null && config.devServer.historyApiFallback !== false) {
     config.devServer.historyApiFallback = config.devServer.historyApiFallback || {};
@@ -43,4 +44,15 @@ export function validateDevServer(config: d.Config) {
   }
 
   return config.devServer;
+}
+
+function validateProtocol(devServer: d.DevServerConfig) {
+  if (typeof devServer.protocol === 'string') {
+    let protocol: string = devServer.protocol.trim().toLowerCase() as any;
+    protocol = devServer.protocol.replace(':', '').replace('/', '');
+    devServer.protocol = protocol as any;
+  }
+  if (devServer.protocol !== 'http' && devServer.protocol !== 'https') {
+    devServer.protocol = 'http';
+  }
 }

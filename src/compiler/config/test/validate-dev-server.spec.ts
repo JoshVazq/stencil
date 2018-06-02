@@ -123,7 +123,7 @@ describe('validateDevServer', () => {
   });
 
   it('should set https protocol', () => {
-    config.devServer.protocol = 'https';
+    config.devServer.protocol = 'HTTPS' as any;
     validateConfig(config);
     expect(config.devServer.protocol).toBe('https');
   });

@@ -6,7 +6,11 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistration().then(function(registration) {
         if (registration) {
-          registration.unregister();
+          registration.unregister().then(function(hasUnregistered) {
+            if (hasUnregistered) {
+              console.log('unregistered service worker');
+            }
+          });
         }
       });
     }

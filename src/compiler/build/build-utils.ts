@@ -113,7 +113,7 @@ async function finishBuild(config: d.Config, compilerCtx: d.CompilerCtx, buildCt
 
   if (!compilerCtx.isRebuild && config.devServer && config.flags.serve) {
     const browserUrl = getBrowserUrl(config.devServer);
-    config.logger.info(`dev server: ${browserUrl}`);
+    config.logger.info(`dev server: ${config.logger.cyan(browserUrl)}`);
   }
 
   // print out the time it took to build

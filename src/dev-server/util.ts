@@ -2,8 +2,7 @@ import * as d from '../declarations';
 
 
 export function getClientSideConfig(devServerConfig: d.DevServerConfig) {
-  const browserUrl = getBrowserUrl(devServerConfig);
-  const openUrl = browserUrl + UNREGISTER_SW_URL;
+  const openUrl = getBrowserUrl(devServerConfig, UNREGISTER_SW_URL);
 
   const clientConfig: d.DevServerClientConfig = {
     protocol: devServerConfig.protocol,
@@ -16,10 +15,10 @@ export function getClientSideConfig(devServerConfig: d.DevServerConfig) {
   return clientConfig;
 }
 
-export function getBrowserUrl(devServerConfig: d.DevServerConfig) {
+export function getBrowserUrl(devServerConfig: d.DevServerConfig, pathname = '/') {
   const address = (devServerConfig.address === `0.0.0.0`) ? `localhost` : devServerConfig.address;
   const port = (devServerConfig.port === 80 || devServerConfig.port === 443) ? '' : (':' + devServerConfig.port);
-  return `${devServerConfig.protocol}://${address}${port}`;
+  return `${devServerConfig.protocol}://${address}${port}${pathname}`;
 }
 
 export function getContentType(devServerConfig: d.DevServerConfig, filePath: string) {
