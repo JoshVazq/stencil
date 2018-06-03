@@ -112,6 +112,7 @@ const ARG_OPTS = {
     'es5',
     'help',
     'log',
+    'open',
     'prerender',
     'prod',
     'serve',

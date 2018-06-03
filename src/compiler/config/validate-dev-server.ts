@@ -27,19 +27,25 @@ export function validateDevServer(config: d.Config) {
     }
   }
 
-  if (config.flags && config.flags.serve) {
-    let wwwDir: string = null;
-    const outputTarget: d.OutputTargetWww = config.outputTargets.find(o => o.type === 'www');
-    if (!outputTarget) {
-      throw new Error(`dev server missing www output target`);
+  if (config.flags) {
+    if (config.flags.open === false) {
+      config.devServer.openBrowser = false;
     }
 
-    wwwDir = outputTarget.dir;
+    if (config.flags.serve) {
+      let wwwDir: string = null;
+      const outputTarget: d.OutputTargetWww = config.outputTargets.find(o => o.type === 'www');
+      if (!outputTarget) {
+        throw new Error(`dev server missing www output target`);
+      }
 
-    setStringConfig(config.devServer, 'root', wwwDir);
+      wwwDir = outputTarget.dir;
 
-    if (!config.sys.path.isAbsolute(config.devServer.root)) {
-      config.devServer.root = pathJoin(config, config.rootDir, config.devServer.root);
+      setStringConfig(config.devServer, 'root', wwwDir);
+
+      if (!config.sys.path.isAbsolute(config.devServer.root)) {
+        config.devServer.root = pathJoin(config, config.rootDir, config.devServer.root);
+      }
     }
   }
 
@@ -49,7 +55,7 @@ export function validateDevServer(config: d.Config) {
 function validateProtocol(devServer: d.DevServerConfig) {
   if (typeof devServer.protocol === 'string') {
     let protocol: string = devServer.protocol.trim().toLowerCase() as any;
-    protocol = devServer.protocol.replace(':', '').replace('/', '');
+    protocol = protocol.replace(':', '').replace('/', '');
     devServer.protocol = protocol as any;
   }
   if (devServer.protocol !== 'http' && devServer.protocol !== 'https') {

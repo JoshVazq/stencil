@@ -170,6 +170,12 @@ describe('parseFlags', () => {
     expect(flags.log).toBe(true);
   });
 
+  it('should parse --no-open', () => {
+    process.argv[2] = '--no-open';
+    const flags = parseFlags(process);
+    expect(flags.openBrowser).toBe(false);
+  });
+
   it('should parse --port', () => {
     process.argv[2] = '--port';
     process.argv[3] = '8888';

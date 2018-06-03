@@ -117,6 +117,12 @@ describe('validateDevServer', () => {
     expect(config.devServer.openBrowser).toBe(false);
   });
 
+  it('should set openBrowser from flag', () => {
+    config.flags = { open: false };
+    validateConfig(config);
+    expect(config.devServer.openBrowser).toBe(false);
+  });
+
   it('should default http protocol', () => {
     validateConfig(config);
     expect(config.devServer.protocol).toBe('http');
