@@ -51,6 +51,7 @@ export interface HttpRequest {
   pathname?: string;
   filePath?: string;
   stats?: d.FsStats;
+  headers?: {[name: string]: string};
 }
 
 
@@ -77,10 +78,11 @@ export interface DevServerSocket {
 
 
 export interface DevServerMessage {
-  startServerRequest?: DevServerConfig;
-  startServerResponse?: DevServerClientConfig;
+  startServer?: DevServerConfig;
+  serverStated?: DevServerClientConfig;
   buildResults?: DevServerBuildResults;
   requestBuildResults?: boolean;
+  error?: { message?: string; type?: string; stack?: any; };
 }
 
 

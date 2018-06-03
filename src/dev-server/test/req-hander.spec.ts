@@ -14,6 +14,7 @@ describe('request-handler', async () => {
   let fs: TestingFs;
   let req: http.ServerRequest;
   let res: TestServerResponse;
+  const root = path.resolve('/');
   const tmplDirPath = path.join(__dirname, '..', 'templates', 'directory-index.html');
   const tmpl404Path = path.join(__dirname, '..', 'templates', '404.html');
   const tmplDir = nodeFs.readFileSync(tmplDirPath, 'utf8');
@@ -34,7 +35,7 @@ describe('request-handler', async () => {
     stencilConfig.devServer = {
       contentTypes: contentTypes,
       devServerDir: path.join(__dirname, '..'),
-      root: '/www'
+      root: path.join(root, 'www')
     };
 
     await fs.mkdir(stencilConfig.devServer.root);
@@ -64,7 +65,7 @@ describe('request-handler', async () => {
   describe('historyApiFallback', () => {
 
     it('should load historyApiFallback index.html when dot in the url disableDotRule true', async () => {
-      await fs.writeFile('/www/index.html', `root-index`);
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `root-index`);
       config.historyApiFallback = {
         index: 'index.html',
         disableDotRule: true
@@ -82,7 +83,7 @@ describe('request-handler', async () => {
     });
 
     it('should not load historyApiFallback index.html when dot in the url', async () => {
-      await fs.writeFile('/www/index.html', `root-index`);
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `root-index`);
       config.historyApiFallback = {
         index: 'index.html'
       };
@@ -99,9 +100,7 @@ describe('request-handler', async () => {
     });
 
     it('should not load historyApiFallback index.html when no text/html accept header', async () => {
-      await fs.writeFiles({
-        '/www/index.html': `root-index`
-      });
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `root-index`);
       config.historyApiFallback = {
         index: 'index.html'
       };
@@ -118,9 +117,7 @@ describe('request-handler', async () => {
     });
 
     it('should not load historyApiFallback index.html when not GET request', async () => {
-      await fs.writeFiles({
-        '/www/index.html': `root-index`
-      });
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `root-index`);
       config.historyApiFallback = {
         index: 'index.html'
       };
@@ -137,9 +134,7 @@ describe('request-handler', async () => {
     });
 
     it('should load historyApiFallback index.html when no trailing slash', async () => {
-      await fs.writeFiles({
-        '/www/index.html': `root-index`
-      });
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `root-index`);
       config.historyApiFallback = {
         index: 'index.html'
       };
@@ -157,9 +152,7 @@ describe('request-handler', async () => {
     });
 
     it('should load historyApiFallback index.html when trailing slash', async () => {
-      await fs.writeFiles({
-        '/www/index.html': `root-index`
-      });
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `root-index`);
       config.historyApiFallback = {
         index: 'index.html'
       };
@@ -177,11 +170,9 @@ describe('request-handler', async () => {
     });
 
     it('should list directory when ended in slash and not using historyApiFallback', async () => {
-      await fs.mkdir('/www/about-us');
-      await fs.writeFiles({
-        '/www/about-us/somefile1.html': `somefile1`,
-        '/www/about-us/somefile2.html': `somefile2`
-      });
+      await fs.mkdir(path.join(root, 'www', 'about-us'));
+      await fs.writeFile(path.join(root, 'www', 'about-us', 'somefile1.html'), `somefile1`);
+      await fs.writeFile(path.join(root, 'www', 'about-us', 'somefile2.html'), `somefile2`);
       config.historyApiFallback = null;
       const handler = createRequestHandler(config, fs);
 
@@ -201,11 +192,9 @@ describe('request-handler', async () => {
   describe('serve directory index', () => {
 
     it('should load index.html in directory', async () => {
-      await fs.mkdir('/www/about-us');
-      await fs.writeFiles({
-        '/www/about-us.html': `about-us.html page`,
-        '/www/about-us/index.html': `about-us-index-directory`
-      });
+      await fs.mkdir(path.join(root, 'www', 'about-us'));
+      await fs.writeFile(path.join(root, 'www', 'about-us.html'), `about-us.html page`);
+      await fs.writeFile(path.join(root, 'www', 'about-us', 'index.html'), `about-us-index-directory`);
       config.historyApiFallback = null;
       const handler = createRequestHandler(config, fs);
 
@@ -221,11 +210,9 @@ describe('request-handler', async () => {
     });
 
     it('should redirect directory w/ slash', async () => {
-      await fs.mkdir('/www/about-us');
-      await fs.writeFiles({
-        '/www/about-us/somefile1.html': `somefile1`,
-        '/www/about-us/somefile2.html': `somefile2`
-      });
+      await fs.mkdir(path.join(root, 'www', 'about-us'));
+      await fs.writeFile(path.join(root, 'www', 'about-us', 'somefile1.html'), `somefile1`);
+      await fs.writeFile(path.join(root, 'www', 'about-us', 'somefile2.html'), `somefile2`);
       config.historyApiFallback = {};
       const handler = createRequestHandler(config, fs);
 
@@ -240,10 +227,8 @@ describe('request-handler', async () => {
     });
 
     it('get directory index.html with no trailing slash', async () => {
-      await fs.mkdir('/www/about-us');
-      await fs.writeFiles({
-        '/www/about-us/index.html': `aboutus`
-      });
+      await fs.mkdir(path.join(root, 'www', 'about-us'));
+      await fs.writeFile(path.join(root, 'www', 'about-us', 'index.html'), `aboutus`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '/about-us';
@@ -255,10 +240,8 @@ describe('request-handler', async () => {
     });
 
     it('get directory index.html with trailing slash', async () => {
-      await fs.mkdir('/www/about-us');
-      await fs.writeFiles({
-        '/www/about-us/index.html': `aboutus`
-      });
+      await fs.mkdir(path.join(root, 'www', 'about-us'));
+      await fs.writeFile(path.join(root, 'www', 'about-us', 'index.html'), `aboutus`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '/about-us/';
@@ -274,7 +257,7 @@ describe('request-handler', async () => {
   describe('error not found static files', () => {
 
     it('not find js file', async () => {
-      await fs.mkdir('/www/scripts');
+      await fs.mkdir(path.join(root, 'www', 'scripts'));
       const handler = createRequestHandler(config, fs);
 
       req.url = '/scripts/file2.js';
@@ -286,7 +269,7 @@ describe('request-handler', async () => {
     });
 
     it('not find css file', async () => {
-      await fs.mkdir('/www/scripts');
+      await fs.mkdir(path.join(root, 'www', 'scripts'));
       const handler = createRequestHandler(config, fs);
 
       req.url = '/styles/file2.css';
@@ -313,11 +296,9 @@ describe('request-handler', async () => {
   describe('root index', () => {
 
     it('serve directory listing when no index.html', async () => {
-      await fs.writeFiles({
-        '/www/styles.css': `/* hi */`,
-        '/www/scripts.js': `// hi`,
-        '/www/.gitignore': `// gitignore`
-      });
+      await fs.writeFile(path.join(root, 'www', 'styles.css'), `/* hi */`);
+      await fs.writeFile(path.join(root, 'www', 'scripts.js'), `// hi`);
+      await fs.writeFile(path.join(root, 'www', '.gitignore'), `# gitignore`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '/';
@@ -329,9 +310,7 @@ describe('request-handler', async () => {
     });
 
     it('serve root index.html w/ querystring', async () => {
-      await fs.writeFiles({
-        '/www/index.html': `hello`
-      });
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `hello`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '/?qs=123';
@@ -343,9 +322,7 @@ describe('request-handler', async () => {
     });
 
     it('serve root index.html', async () => {
-      await fs.writeFiles({
-        '/www/index.html': `hello`
-      });
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `hello`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '/';
@@ -357,9 +334,7 @@ describe('request-handler', async () => {
     });
 
     it('302 redirect to / when no path at all', async () => {
-      await fs.writeFiles({
-        '/www/index.html': `hello`
-      });
+      await fs.writeFile(path.join(root, 'www', 'index.html'), `hello`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '';
@@ -374,9 +349,7 @@ describe('request-handler', async () => {
   describe('serve static text files', () => {
 
     it('should load file w/ querystring', async () => {
-      await fs.writeFiles({
-        '/www/scripts/file1.html': `<html></html>`
-      });
+      await fs.writeFile(path.join(root, 'www', 'scripts', 'file1.html'), `<html></html>`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '/scripts/file1.html?qs=1234';
@@ -388,9 +361,7 @@ describe('request-handler', async () => {
     });
 
     it('should load html file', async () => {
-      await fs.writeFiles({
-        '/www/scripts/file1.html': `<html></html>`
-      });
+      await fs.writeFile(path.join(root, 'www', 'scripts', 'file1.html'), `<html></html>`);
       const handler = createRequestHandler(config, fs);
 
       req.url = '/scripts/file1.html';
@@ -404,6 +375,18 @@ describe('request-handler', async () => {
   });
 
 });
+
+
+function readResponse(res: http.ServerRequest) {
+  let content = '';
+
+  res.on('data', chunk => {
+    content += chunk;
+  });
+
+  return content;
+}
+
 
 interface TestServerResponse extends http.ServerResponse {
   $statusCode: number;

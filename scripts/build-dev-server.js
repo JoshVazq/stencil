@@ -24,6 +24,7 @@ if (success) {
       input: ENTRY_FILE,
       external: [
         'buffer',
+        'child_process',
         'crypto',
         'fs',
         'http',
@@ -31,7 +32,8 @@ if (success) {
         'net',
         'path',
         'os',
-        'url'
+        'url',
+        'zlib'
       ],
       onwarn: (message) => {
         if (/top level of an ES module/.test(message)) return;

@@ -1,17 +1,19 @@
 import * as d from '../declarations';
 import { NodeFs } from '../sys/node/node-fs';
+import { sendError } from './util';
 import { startDevServer } from './start-server';
 import * as path from 'path';
 
 
-async function startServerRequest(devServerConfig: d.DevServerConfig) {
+async function startServer(devServerConfig: d.DevServerConfig) {
+  // received a message from main to start the server
   try {
     const fs = new NodeFs();
     devServerConfig.contentTypes = await loadContentTypes(fs);
     startDevServer(devServerConfig, fs);
 
   } catch (e) {
-    console.error('dev server error', e);
+    sendError(process, e);
   }
 }
 
@@ -24,12 +26,12 @@ async function loadContentTypes(fs: NodeFs) {
 
 
 process.on('message', (msg: d.DevServerMessage) => {
-  if (msg.startServerRequest) {
-    startServerRequest(msg.startServerRequest);
+  if (msg.startServer) {
+    startServer(msg.startServer);
   }
 });
 
 
-process.on('unhandledRejection', (error: Error) => {
-  console.log('dev server, unhandledRejection', error.message);
+process.on('unhandledRejection', (e: any) => {
+  console.log(e);
 });
