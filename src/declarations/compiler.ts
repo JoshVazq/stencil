@@ -24,6 +24,9 @@ export interface CompilerCtx {
   lastBuildConditionalsBrowserEsm?: d.BuildConditionals;
   lastBuildConditionalsBrowserEs5?: d.BuildConditionals;
   lastBuildConditionalsEsmEs5?: d.BuildConditionals;
+
+  lastBuildStyles?: { [styleId: string]: string };
+
   hasSuccessfulBuild?: boolean;
   localPrerenderServer?: any;
   lastBuildResults?: d.BuildResults;

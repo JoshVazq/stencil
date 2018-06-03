@@ -98,4 +98,5 @@ export interface DevServerBuildResults {
   dirsDeleted: string[];
   filesChanged: string[];
   filesWritten: string[];
+  stylesUpdated: { [styleId: string]: string };
 }

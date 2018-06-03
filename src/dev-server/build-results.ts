@@ -13,7 +13,8 @@ export function generateBuildResults(buildResults: d.BuildResults) {
     dirsAdded: buildResults.dirsAdded,
     dirsDeleted: buildResults.dirsDeleted,
     filesChanged: buildResults.filesChanged,
-    filesWritten: buildResults.filesWritten
+    filesWritten: buildResults.filesWritten,
+    stylesUpdated: buildResults.stylesUpdated
   };
 
   return devServerBuild;
