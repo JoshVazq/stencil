@@ -7,7 +7,7 @@ export interface DevServerConfig {
   devServerDir?: string;
   gzip?: boolean;
   historyApiFallback?: HistoryApiFallback;
-  liveReload?: boolean;
+  hotReload?: boolean;
   openBrowser?: boolean;
   openUrl?: string;
   port?: number;
@@ -18,7 +18,7 @@ export interface DevServerConfig {
 
 export interface DevServerClientConfig {
   address: string;
-  liveReload: boolean;
+  hotReload: boolean;
   openUrl: string;
   port: number;
   protocol: 'http' | 'https';

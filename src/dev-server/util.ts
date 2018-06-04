@@ -38,7 +38,7 @@ export function getClientSideConfig(devServerConfig: d.DevServerConfig) {
     address: devServerConfig.address,
     port: devServerConfig.port,
     openUrl: openUrl,
-    liveReload: devServerConfig.liveReload
+    hotReload: devServerConfig.hotReload
   };
 
   return clientConfig;

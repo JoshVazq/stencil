@@ -95,15 +95,15 @@ describe('validateDevServer', () => {
     expect(config.devServer.historyApiFallback).toBe(null);
   });
 
-  it('should default liveReload', () => {
+  it('should default hotReload', () => {
     validateConfig(config);
-    expect(config.devServer.liveReload).toBe(true);
+    expect(config.devServer.hotReload).toBe(true);
   });
 
-  it('should set liveReload', () => {
-    config.devServer.liveReload = false;
+  it('should set hotReload', () => {
+    config.devServer.hotReload = false;
     validateConfig(config);
-    expect(config.devServer.liveReload).toBe(false);
+    expect(config.devServer.hotReload).toBe(false);
   });
 
   it('should default openBrowser', () => {

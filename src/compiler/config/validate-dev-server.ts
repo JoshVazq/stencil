@@ -10,7 +10,7 @@ export function validateDevServer(config: d.Config) {
   setStringConfig(config.devServer, 'address', '0.0.0.0');
   setNumberConfig(config.devServer, 'port', null, 3333);
   setBooleanConfig(config.devServer, 'gzip', null, true);
-  setBooleanConfig(config.devServer, 'liveReload', null, true);
+  setBooleanConfig(config.devServer, 'hotReload', null, true);
   setBooleanConfig(config.devServer, 'openBrowser', null, true);
 
   validateProtocol(config.devServer);

@@ -52,9 +52,13 @@ function startServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess
     compilerCtx.events.subscribe('build', buildResults => {
       // a compiler build has finished
       // send the build results to the child server process
-      sendMsg(serverProcess, {
-        buildResults: buildResults
-      });
+      const msg: d.DevServerMessage = {
+        buildResults: Object.assign({}, buildResults)
+      };
+      delete msg.buildResults.entries;
+      delete msg.buildResults.components;
+
+      sendMsg(serverProcess, msg);
     });
 
     // have the main process send a message to the child server process

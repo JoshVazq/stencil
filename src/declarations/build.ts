@@ -2,39 +2,39 @@ import * as d from './index';
 
 
 export interface BuildCtx {
-  graphData?: GraphData;
-  componentRefs?: d.PotentialComponentRef[];
-  moduleGraphs?: d.ModuleGraph[];
-  collections?: d.Collection[];
-  buildId: number;
-  requiresFullBuild: boolean;
-  diagnostics: d.Diagnostic[];
-  entryModules: d.EntryModule[];
-  entryPoints: d.EntryPoint[];
-  global?: d.ModuleFile;
-  transpileBuildCount: number;
-  bundleBuildCount: number;
-  appFileBuildCount: number;
-  indexBuildCount: number;
-  components: string[];
   aborted: boolean;
-  timeSpan: d.LoggerTimeSpan;
-  startTime: number;
-  hasChangedJsText: boolean;
-  filesWritten: string[];
-  filesDeleted: string[];
+  appFileBuildCount: number;
+  buildId: number;
+  bundleBuildCount: number;
+  collections?: d.Collection[];
+  components: string[];
+  componentRefs?: d.PotentialComponentRef[];
+  data?: any;
+  diagnostics: d.Diagnostic[];
   dirsDeleted: string[];
   dirsAdded: string[];
-  filesChanged: string[];
-  filesUpdated: string[];
-  filesAdded: string[];
-  stylesUpdated: { [styleId: string]: string };
+  entryModules: d.EntryModule[];
+  entryPoints: d.EntryPoint[];
   externalStylesUpdated: string[];
-  shouldAbort?(): boolean;
-  data?: any;
+  filesAdded: string[];
+  filesChanged: string[];
+  filesDeleted: string[];
+  filesUpdated: string[];
+  filesWritten: string[];
+  finish?(): Promise<BuildResults>;
+  global?: d.ModuleFile;
+  graphData?: GraphData;
+  hasChangedJsText: boolean;
   hasSlot?: boolean;
   hasSvg?: boolean;
-  finish?(): Promise<BuildResults>;
+  indexBuildCount: number;
+  moduleGraphs?: d.ModuleGraph[];
+  requiresFullBuild: boolean;
+  shouldAbort?(): boolean;
+  startTime: number;
+  stylesUpdated: { [styleId: string]: string };
+  timeSpan: d.LoggerTimeSpan;
+  transpileBuildCount: number;
 }
 
 
@@ -68,9 +68,10 @@ export interface BuildResults {
 
 
 export interface HotReloadData {
-  windowReload?: boolean;
-  stylesUpdated?: { [styleId: string]: string };
+  componentsUpdated?: string[];
   externalStylesUpdated?: string[];
+  stylesUpdated?: { [styleId: string]: string };
+  windowReload?: boolean;
 }
 
 

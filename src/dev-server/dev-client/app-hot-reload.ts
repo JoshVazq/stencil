@@ -1,19 +1,46 @@
 import  * as d from '../../declarations';
 
 
-export function appHotReload(win: Window, doc: Document, hotReload: d.HotReloadData) {
-
+export function appHotReload(win: d.DevClientWindow, doc: Document, hotReload: d.HotReloadData) {
   if (hotReload.windowReload) {
     win.location.reload(true);
     return;
   }
 
-  if (hotReload.externalStylesUpdated) {
-    reloadExternalStyles(doc, hotReload.externalStylesUpdated);
+  if (hotReload.componentsUpdated) {
+    reloadComponents(doc, hotReload.componentsUpdated);
   }
 
   if (hotReload.stylesUpdated) {
     reloadStyles(doc, hotReload.stylesUpdated);
+  }
+
+  if (hotReload.externalStylesUpdated) {
+    reloadExternalStyles(doc, hotReload.externalStylesUpdated);
+  }
+}
+
+
+function reloadComponents(doc: Document, componentsUpdated: string[]) {
+  componentsUpdated.forEach(tagName => {
+    reloadComponent(doc.documentElement, tagName.toLowerCase());
+  });
+}
+
+
+function reloadComponent(elm: Element, tagName: string) {
+  if (elm.nodeName.toLowerCase() === tagName) {
+    (elm as any)['s-hmr'] && (elm as any)['s-hmr']();
+  }
+
+  if (elm.shadowRoot) {
+    reloadComponent(elm.shadowRoot as any, tagName);
+  }
+
+  if (elm.children) {
+    for (let i = 0; i < elm.children.length; i++) {
+      reloadComponent(elm.children[i], tagName);
+    }
   }
 }
 

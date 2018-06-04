@@ -322,6 +322,11 @@ export interface HostElement extends HTMLElement {
    */
   ['s-init']?: () => void;
 
+  /**
+   * Hot Module Replacement, dev mode only
+   */
+  ['s-hmr']?: () => void;
+
   componentOnReady?: () => Promise<this>;
   color?: string;
   mode?: string;

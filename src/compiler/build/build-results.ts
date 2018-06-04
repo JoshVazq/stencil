@@ -2,6 +2,7 @@ import * as d from '../../declarations';
 import { cleanDiagnostics } from '../../util/logger/logger-util';
 import { DEFAULT_STYLE_MODE, ENCAPSULATION } from '../../util/constants';
 import { hasError, normalizePath } from '../util';
+import { genereateHotReload } from './build-hot-reload';
 
 
 export async function generateBuildResults(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
@@ -139,56 +140,4 @@ async function getBuildBundle(config: d.Config, entryBundle: d.EntryBundle, getG
   }
 
   return buildBundle;
-}
-
-
-function genereateHotReload(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
-  if (!compilerCtx.isRebuild || !config.devServer || !config.devServer.liveReload) {
-    return null;
-  }
-
-  const liveReload: d.HotReloadData = {};
-
-  if (buildCtx.hasChangedJsText) {
-    liveReload.windowReload = true;
-    return liveReload;
-  }
-
-  if (buildCtx.stylesUpdated) {
-    liveReload.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
-  }
-
-  const externalStylesUpdated = getExternalStylesUpdated(config, compilerCtx, buildCtx);
-  if (externalStylesUpdated) {
-    liveReload.externalStylesUpdated = getExternalStylesUpdated(config, compilerCtx, buildCtx);
-  }
-
-  return liveReload;
-}
-
-
-function getExternalStylesUpdated(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
-  if (!compilerCtx.isRebuild) {
-    return null;
-  }
-
-  const outputTargets = (config.outputTargets as d.OutputTargetWww[]).filter(o => o.type === 'www');
-  if (outputTargets.length === 0) {
-    return null;
-  }
-
-  const cssFiles = buildCtx.filesWritten.filter(f => f.endsWith('.css'));
-  if (cssFiles.length === 0) {
-    return null;
-  }
-
-  const updatedCssFiles: string[] = [];
-
-  cssFiles.forEach(fileWritten => {
-    outputTargets.forEach(outputTarget => {
-      updatedCssFiles.push('/' + config.sys.path.relative(outputTarget.dir, fileWritten));
-    });
-  });
-
-  return updatedCssFiles.sort();
 }
