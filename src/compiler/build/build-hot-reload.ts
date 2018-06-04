@@ -8,7 +8,12 @@ export function genereateHotReload(config: d.Config, compilerCtx: d.CompilerCtx,
 
   const hotReload: d.HotReloadData = {};
 
-  if (buildCtx.hasChangedJsText) {
+  const componentsUpdated = getComponentsUpdated(compilerCtx, buildCtx);
+
+  if (componentsUpdated) {
+    hotReload.componentsUpdated = componentsUpdated;
+
+  } else if (buildCtx.hasChangedJsText) {
     hotReload.windowReload = true;
     return hotReload;
   }
@@ -23,6 +28,31 @@ export function genereateHotReload(config: d.Config, compilerCtx: d.CompilerCtx,
   }
 
   return hotReload;
+}
+
+
+function getComponentsUpdated(compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
+  const filesChanged = buildCtx.filesChanged;
+  if (!filesChanged || filesChanged.length === 0) {
+    return null;
+  }
+
+  const componentsUpdated: string[] = [];
+
+  Object.keys(compilerCtx.moduleFiles).forEach(tsFilePath => {
+    if (filesChanged.includes(tsFilePath)) {
+      const moduleFile = compilerCtx.moduleFiles[tsFilePath];
+      if (moduleFile.cmpMeta) {
+        componentsUpdated.push(moduleFile.cmpMeta.tagNameMeta);
+      }
+    }
+  });
+
+  if (componentsUpdated.length === 0) {
+    return null;
+  }
+
+  return componentsUpdated.sort();
 }
 
 

@@ -70,6 +70,7 @@ export interface ComponentMeta {
   componentClass?: string;
   dependencies?: ComponentDependencies;
   jsdoc?: JSDoc;
+  hmrUrl?: string;
 }
 
 

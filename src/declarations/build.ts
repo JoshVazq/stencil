@@ -42,28 +42,28 @@ export type GraphData = Map<string, string[]>;
 
 
 export interface BuildResults {
-  buildId: number;
-  diagnostics: d.Diagnostic[];
-  hasError: boolean;
-  hasSuccessfulBuild: boolean;
   aborted?: boolean;
-  duration: number;
-  isRebuild: boolean;
-  transpileBuildCount: number;
+  buildId: number;
   bundleBuildCount: number;
-  hasChangedJsText: boolean;
+  components: BuildComponent[];
+  diagnostics: d.Diagnostic[];
   dirsAdded: string[];
   dirsDeleted: string[];
-  filesWritten: string[];
-  filesChanged: string[];
-  filesUpdated: string[];
-  filesAdded: string[];
-  filesDeleted: string[];
-  components: BuildComponent[];
+  duration: number;
   entries: BuildEntry[];
-  hasSlot: boolean;
-  hasSvg: boolean;
+  filesAdded: string[];
+  filesChanged: string[];
+  filesDeleted: string[];
+  filesUpdated: string[];
+  filesWritten: string[];
+  hasChangedJsText: boolean;
+  hasError: boolean;
   hotReload?: HotReloadData;
+  hasSlot: boolean;
+  hasSuccessfulBuild: boolean;
+  hasSvg: boolean;
+  isRebuild: boolean;
+  transpileBuildCount: number;
 }
 
 

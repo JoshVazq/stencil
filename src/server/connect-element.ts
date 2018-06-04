@@ -41,7 +41,10 @@ export function connectElement(config: d.Config, plt: d.PlatformApi, App: d.AppG
 function connectHostElement(config: d.Config, plt: d.PlatformApi, App: d.AppGlobal, hydrateResults: d.HydrateResults, elm: d.HostElement, cmpMeta: d.ComponentMeta) {
   if (!cmpMeta.componentConstructor) {
     const hostSnapshot = initHostSnapshot(plt.domApi, cmpMeta, elm);
-    plt.requestBundle(cmpMeta, elm, hostSnapshot);
+    // remember a "snapshot" of this host element's current attributes/child nodes/slots/etc
+    plt.hostSnapshotMap.set(elm, hostSnapshot);
+
+    plt.requestBundle(cmpMeta, elm);
   }
 
   if (cmpMeta.encapsulation !== ENCAPSULATION.ShadowDom) {

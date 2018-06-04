@@ -8,7 +8,12 @@ export function appHotReload(win: d.DevClientWindow, doc: Document, hotReload: d
   }
 
   if (hotReload.componentsUpdated) {
-    reloadComponents(doc, hotReload.componentsUpdated);
+    if (supportsDynamicImports()) {
+      reloadComponents(doc, hotReload.componentsUpdated);
+    } else {
+      win.location.reload(true);
+      return;
+    }
   }
 
   if (hotReload.stylesUpdated) {
@@ -121,4 +126,12 @@ function reloadStyle(elm: Element, styleId: string, styleText: string) {
       reloadStyle(elm.children[i], styleId, styleText);
     }
   }
+}
+
+function supportsDynamicImports() {
+  try {
+    new Function('import("")');
+    return true;
+  } catch (e) {}
+  return false;
 }
