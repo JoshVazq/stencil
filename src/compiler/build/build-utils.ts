@@ -47,7 +47,8 @@ export function getBuildContext(config: d.Config, compilerCtx: d.CompilerCtx, wa
     filesDeleted: watcher ? watcher.filesDeleted : [],
     dirsDeleted: watcher ? watcher.dirsDeleted : [],
     dirsAdded: watcher ? watcher.dirsAdded : [],
-    stylesUpdated: null
+    stylesUpdated: null,
+    externalStylesUpdated: null
   };
 
   buildCtx.shouldAbort = () => {

@@ -29,6 +29,7 @@ export interface BuildCtx {
   filesUpdated: string[];
   filesAdded: string[];
   stylesUpdated: { [styleId: string]: string };
+  externalStylesUpdated: string[];
   shouldAbort?(): boolean;
   data?: any;
   hasSlot?: boolean;
@@ -63,6 +64,7 @@ export interface BuildResults {
   hasSlot: boolean;
   hasSvg: boolean;
   stylesUpdated: { [styleId: string]: string };
+  externalStylesUpdated: string[];
 }
 
 

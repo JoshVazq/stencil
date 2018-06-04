@@ -1,7 +1,7 @@
 import * as d from '../../declarations';
 
 
-export function appError(doc: Document, buildResults: d.DevServerBuildResults) {
+export function appError(doc: Document, buildResults: d.BuildResults) {
   if (!Array.isArray(buildResults.diagnostics)) {
     return;
   }

@@ -80,23 +80,7 @@ export interface DevServerSocket {
 export interface DevServerMessage {
   startServer?: DevServerConfig;
   serverStated?: DevServerClientConfig;
-  buildResults?: DevServerBuildResults;
+  buildResults?: d.BuildResults;
   requestBuildResults?: boolean;
   error?: { message?: string; type?: string; stack?: any; };
-}
-
-
-export interface DevServerBuildResults {
-  buildId: number;
-  diagnostics: d.Diagnostic[];
-  hasError: boolean;
-  hasSuccessfulBuild: boolean;
-  aborted?: boolean;
-  duration: number;
-  isRebuild: boolean;
-  dirsAdded: string[];
-  dirsDeleted: string[];
-  filesChanged: string[];
-  filesWritten: string[];
-  stylesUpdated: { [styleId: string]: string };
 }

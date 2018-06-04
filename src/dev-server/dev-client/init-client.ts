@@ -3,7 +3,7 @@ import { appReset } from './app-update';
 import { initClientWebSocket } from './client-web-socket';
 
 
-export async function initClient(devServerConfig: d.DevServerClientConfig, ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document) {
+export function initClient(devServerConfig: d.DevServerClientConfig, ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document) {
   try {
     if (!devServerConfig) {
       console.error(`invalid client-side dev server config`);
@@ -25,11 +25,13 @@ export async function initClient(devServerConfig: d.DevServerClientConfig, ctx: 
       // what's expected like /
       // we're doing this so we can force the server
       // worker to unregister, but do not fully reload the page yet
-      await appReset(win);
-    }
+      appReset(win).then(() => {
+        initClientWebSocket(ctx, win, doc);
+      });
 
-    // let's setup this thing
-    initClientWebSocket(ctx, win, doc);
+    } else {
+      initClientWebSocket(ctx, win, doc);
+    }
 
   } catch (e) {
     console.error(e);

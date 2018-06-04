@@ -29,6 +29,7 @@ export async function generateBuildResults(config: d.Config, compilerCtx: d.Comp
     hasSlot: !!buildCtx.hasSlot,
     hasSvg: !!buildCtx.hasSvg,
     stylesUpdated: buildCtx.stylesUpdated,
+    externalStylesUpdated: getExternalStylesUpdated(config, compilerCtx, buildCtx),
 
     components: [],
 
@@ -135,4 +136,31 @@ async function getBuildBundle(config: d.Config, entryBundle: d.EntryBundle, getG
   }
 
   return buildBundle;
+}
+
+
+function getExternalStylesUpdated(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
+  if (!compilerCtx.isRebuild) {
+    return null;
+  }
+
+  const outputTargets = (config.outputTargets as d.OutputTargetWww[]).filter(o => o.type === 'www');
+  if (outputTargets.length === 0) {
+    return null;
+  }
+
+  const cssFiles = buildCtx.filesWritten.filter(f => f.endsWith('.css'));
+  if (cssFiles.length === 0) {
+    return null;
+  }
+
+  const updatedCssFiles: string[] = [];
+
+  cssFiles.forEach(fileWritten => {
+    outputTargets.forEach(outputTarget => {
+      updatedCssFiles.push('/' + config.sys.path.relative(outputTarget.dir, fileWritten));
+    });
+  });
+
+  return updatedCssFiles.sort();
 }
