@@ -28,8 +28,6 @@ export async function generateBuildResults(config: d.Config, compilerCtx: d.Comp
     dirsDeleted: buildCtx.dirsDeleted.slice().sort(),
     hasSlot: !!buildCtx.hasSlot,
     hasSvg: !!buildCtx.hasSvg,
-    stylesUpdated: buildCtx.stylesUpdated,
-    externalStylesUpdated: getExternalStylesUpdated(config, compilerCtx, buildCtx),
 
     components: [],
 
@@ -37,6 +35,11 @@ export async function generateBuildResults(config: d.Config, compilerCtx: d.Comp
       return getEntryModule(config, buildCtx, getGzipSize, en);
     }))
   };
+
+  const hotReload = genereateHotReload(config, compilerCtx, buildCtx);
+  if (hotReload) {
+    buildResults.hotReload = hotReload;
+  }
 
   buildResults.entries.forEach(en => {
     buildResults.components.push(...en.components);
@@ -136,6 +139,31 @@ async function getBuildBundle(config: d.Config, entryBundle: d.EntryBundle, getG
   }
 
   return buildBundle;
+}
+
+
+function genereateHotReload(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
+  if (!compilerCtx.isRebuild || !config.devServer || !config.devServer.liveReload) {
+    return null;
+  }
+
+  const liveReload: d.HotReloadData = {};
+
+  if (buildCtx.hasChangedJsText) {
+    liveReload.windowReload = true;
+    return liveReload;
+  }
+
+  if (buildCtx.stylesUpdated) {
+    liveReload.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
+  }
+
+  const externalStylesUpdated = getExternalStylesUpdated(config, compilerCtx, buildCtx);
+  if (externalStylesUpdated) {
+    liveReload.externalStylesUpdated = getExternalStylesUpdated(config, compilerCtx, buildCtx);
+  }
+
+  return liveReload;
 }
 
 

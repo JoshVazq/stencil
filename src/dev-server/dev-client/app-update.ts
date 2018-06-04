@@ -27,16 +27,10 @@ export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow,
       return;
     }
 
-    if (buildResults.isRebuild && buildResults.hasChangedJsText && buildResults.hasSuccessfulBuild) {
-      // this is a successful rebuild and the changes were of JS text, so do a full reload
-
-
-      win.location.reload(true);
-      return;
-    }
-
     // let's hot reload what we can from the build results
-    appHotReload(doc, buildResults);
+    if (buildResults.hotReload) {
+      appHotReload(win, doc, buildResults.hotReload);
+    }
 
   } catch (e) {
     console.error(e);

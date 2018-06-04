@@ -220,7 +220,7 @@ export class WatcherListener {
   queue(path: string) {
     this.recentChanges = this.recentChanges.filter(rc => {
       // only keep changes that happened in the last XX milliseconds
-      return (Date.now() - 2000) < rc.timestamp;
+      return (Date.now() - 500) < rc.timestamp;
     });
 
     if (this.recentChanges.some(rc => rc.filePath === path)) {

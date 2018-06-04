@@ -1,30 +1,36 @@
 import  * as d from '../../declarations';
 
 
-export function appHotReload(doc: Document, buildResults: d.BuildResults) {
+export function appHotReload(win: Window, doc: Document, hotReload: d.HotReloadData) {
 
-  if (buildResults.externalStylesUpdated) {
-    hotReloadExternalStyles(doc, buildResults.externalStylesUpdated);
+  if (hotReload.windowReload) {
+    win.location.reload(true);
+    return;
   }
 
-  if (buildResults.stylesUpdated) {
-    hotReloadStyles(doc, buildResults.stylesUpdated);
+  if (hotReload.externalStylesUpdated) {
+    reloadExternalStyles(doc, hotReload.externalStylesUpdated);
+  }
+
+  if (hotReload.stylesUpdated) {
+    reloadStyles(doc, hotReload.stylesUpdated);
   }
 }
 
 
-function hotReloadExternalStyles(doc: Document, updatedUrls: string[]) {
+function reloadExternalStyles(doc: Document, updatedUrls: string[]) {
   const versionId = Date.now().toString().substring(5) + (Math.round(Math.random() * 899) + 100);
 
   const styleSheets = doc.querySelectorAll('link[rel="stylesheet"][href]') as NodeListOf<HTMLLinkElement>;
   for (let i = 0; i < styleSheets.length; i++) {
     for (let j = 0; j < updatedUrls.length; j++) {
-      hotReloadExternalStyle(versionId, styleSheets[i], updatedUrls[j]);
+      reloadExternalStyle(versionId, styleSheets[i], updatedUrls[j]);
     }
   }
 }
 
-export function hotReloadExternalStyle(versionId: string, styleSheet: HTMLLinkElement, updatedUrl: string) {
+
+export function reloadExternalStyle(versionId: string, styleSheet: HTMLLinkElement, updatedUrl: string) {
   if (!styleSheet || !styleSheet.href || !updatedUrl) {
     return;
   }
@@ -62,30 +68,30 @@ export function hotReloadExternalStyle(versionId: string, styleSheet: HTMLLinkEl
 }
 
 
-function hotReloadStyles(doc: Document, stylesUpdated: { [styleId: string]: string}) {
+function reloadStyles(doc: Document, stylesUpdated: { [styleId: string]: string}) {
   Object.keys(stylesUpdated).forEach(styleId => {
     const styleText = stylesUpdated[styleId];
-    hostReloadStyle(doc.documentElement, styleId, styleText);
+    reloadStyle(doc.documentElement, styleId, styleText);
   });
 }
 
 
-function hostReloadStyle(elm: Element, styleId: string, styleText: string) {
+function reloadStyle(elm: Element, styleId: string, styleText: string) {
   if (elm.getAttribute && elm.getAttribute('data-style-id') === styleId) {
     elm.innerHTML = styleText;
   }
 
   if (elm.shadowRoot) {
-    hostReloadStyle(elm.shadowRoot as any, styleId, styleText);
+    reloadStyle(elm.shadowRoot as any, styleId, styleText);
   }
 
   if ((elm as HTMLTemplateElement).content) {
-    hostReloadStyle((elm as HTMLTemplateElement).content as any, styleId, styleText);
+    reloadStyle((elm as HTMLTemplateElement).content as any, styleId, styleText);
   }
 
   if (elm.children) {
     for (let i = 0; i < elm.children.length; i++) {
-      hostReloadStyle(elm.children[i], styleId, styleText);
+      reloadStyle(elm.children[i], styleId, styleText);
     }
   }
 }

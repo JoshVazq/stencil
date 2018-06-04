@@ -63,8 +63,14 @@ export interface BuildResults {
   entries: BuildEntry[];
   hasSlot: boolean;
   hasSvg: boolean;
-  stylesUpdated: { [styleId: string]: string };
-  externalStylesUpdated: string[];
+  hotReload?: HotReloadData;
+}
+
+
+export interface HotReloadData {
+  windowReload?: boolean;
+  stylesUpdated?: { [styleId: string]: string };
+  externalStylesUpdated?: string[];
 }
 
 

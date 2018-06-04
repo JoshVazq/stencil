@@ -45,8 +45,8 @@ function startServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess
     });
 
     serverProcess.on('message', (msg: d.DevServerMessage) => {
-      // the CLI has received a message from the child server process
-      cliReceivedMessageFromServer(config, compilerCtx, serverProcess, msg, resolve);
+      // main process has received a message from the child server process
+      mainReceivedMessageFromServer(config, compilerCtx, serverProcess, msg, resolve);
     });
 
     compilerCtx.events.subscribe('build', buildResults => {
@@ -57,7 +57,7 @@ function startServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess
       });
     });
 
-    // have the CLI is send a message to the child server process
+    // have the main process send a message to the child server process
     // to start the http and web socket server
     sendMsg(serverProcess, {
       startServer: config.devServer
@@ -66,7 +66,7 @@ function startServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess
 }
 
 
-function cliReceivedMessageFromServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess: any, msg: d.DevServerMessage, resolve: (devServerConfig: any) => void) {
+function mainReceivedMessageFromServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess: any, msg: d.DevServerMessage, resolve: (devServerConfig: any) => void) {
   if (msg.serverStated) {
     // received a message from the child process that the server has successfully started
     config.devServer.protocol = msg.serverStated.protocol;
@@ -86,9 +86,14 @@ function cliReceivedMessageFromServer(config: d.Config, compilerCtx: d.CompilerC
     // we received a request to send up the latest build results
     if (compilerCtx.lastBuildResults) {
       // we do have build results, so let's send them to the child process
+      // but don't send any previous live reload data
       const msg: d.DevServerMessage = {
-        buildResults: compilerCtx.lastBuildResults
+        buildResults: Object.assign({}, compilerCtx.lastBuildResults)
       };
+      delete msg.buildResults.hotReload;
+      delete msg.buildResults.entries;
+      delete msg.buildResults.components;
+
       serverProcess.send(msg);
     }
     return;
