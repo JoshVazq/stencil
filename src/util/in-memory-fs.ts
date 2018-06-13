@@ -247,7 +247,7 @@ export class InMemoryFileSystem implements d.InMemoryFileSystem {
       }
     }
 
-    const fileContent = await this.disk.readFile(filePath, 'utf-8');
+    const fileContent = await this.disk.readFile(filePath, 'utf8');
 
     if (fileContent.length < MAX_TEXT_CACHE) {
       const item = this.getItem(filePath);
@@ -271,7 +271,7 @@ export class InMemoryFileSystem implements d.InMemoryFileSystem {
       return item.fileText;
     }
 
-    const fileContent = this.disk.readFileSync(filePath, 'utf-8');
+    const fileContent = this.disk.readFileSync(filePath, 'utf8');
 
     if (fileContent.length < MAX_TEXT_CACHE) {
       item.exists = true;
@@ -727,5 +727,3 @@ const IGNORE = [
 // and anything larger is probably a REALLY large file and a rare case
 // which we don't need to eat up memory for
 const MAX_TEXT_CACHE = 5242880;
-
-export const IN_MEMORY_DIR = '__tmp__in__memory__';

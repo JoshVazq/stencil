@@ -12,10 +12,6 @@ export function genereateHotReload(config: d.Config, compilerCtx: d.CompilerCtx,
 
   if (componentsUpdated) {
     hotReload.componentsUpdated = componentsUpdated;
-
-  } else if (buildCtx.hasChangedJsText) {
-    hotReload.windowReload = true;
-    return hotReload;
   }
 
   if (buildCtx.stylesUpdated) {
@@ -32,20 +28,22 @@ export function genereateHotReload(config: d.Config, compilerCtx: d.CompilerCtx,
 
 
 function getComponentsUpdated(compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
+  // find all of the components that would be affected from the file changes
   const filesChanged = buildCtx.filesChanged;
-  if (!filesChanged || filesChanged.length === 0) {
+  if (!filesChanged) {
+    return null;
+  }
+
+  const changedScriptFiles = filesChanged.filter(f => f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js'));
+  if (changedScriptFiles.length === 0) {
     return null;
   }
 
   const componentsUpdated: string[] = [];
+  const allModuleFiles = Object.keys(compilerCtx.moduleFiles).map(tsFilePath => compilerCtx.moduleFiles[tsFilePath]);
 
-  Object.keys(compilerCtx.moduleFiles).forEach(tsFilePath => {
-    if (filesChanged.includes(tsFilePath)) {
-      const moduleFile = compilerCtx.moduleFiles[tsFilePath];
-      if (moduleFile.cmpMeta) {
-        componentsUpdated.push(moduleFile.cmpMeta.tagNameMeta);
-      }
-    }
+  changedScriptFiles.forEach(changedScriptFile => {
+    addComponentsUpdated(allModuleFiles, componentsUpdated, changedScriptFile);
   });
 
   if (componentsUpdated.length === 0) {
@@ -53,6 +51,43 @@ function getComponentsUpdated(compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) 
   }
 
   return componentsUpdated.sort();
+}
+
+
+function addComponentsUpdated(allModuleFiles: d.ModuleFile[], componentsUpdated: string[], changedScriptFile: string) {
+  allModuleFiles.forEach(moduleFile => {
+    if (moduleFile.cmpMeta) {
+      const checkedFiles: string[] = [];
+      const shouldAdd = addComponentUpdated(allModuleFiles, componentsUpdated, changedScriptFile, checkedFiles, moduleFile);
+      if (shouldAdd && !componentsUpdated.includes(moduleFile.cmpMeta.tagNameMeta)) {
+        componentsUpdated.push(moduleFile.cmpMeta.tagNameMeta);
+      }
+    }
+  });
+}
+
+
+function addComponentUpdated(allModuleFiles: d.ModuleFile[], componentsUpdated: string[], changedScriptFile: string, checkedFiles: string[], moduleFile: d.ModuleFile): boolean {
+  if (checkedFiles.includes(changedScriptFile)) {
+    return false;
+  }
+  checkedFiles.push(changedScriptFile);
+
+  if (moduleFile.sourceFilePath === changedScriptFile) {
+    return true;
+  }
+
+  if (moduleFile.jsFilePath === changedScriptFile) {
+    return true;
+  }
+
+  return moduleFile.localImports.some(localImport => {
+    const localImportModuleFile = allModuleFiles.find(m => m.sourceFilePath === localImport);
+    if (localImportModuleFile) {
+      return addComponentUpdated(allModuleFiles, componentsUpdated, changedScriptFile, checkedFiles, localImportModuleFile);
+    }
+    return false;
+  });
 }
 
 

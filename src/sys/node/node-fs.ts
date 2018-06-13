@@ -47,7 +47,7 @@ export class NodeFs implements d.FileSystem {
 
   readFile(filePath: string) {
     return new Promise<string>((resolve, reject) => {
-      fs.readFile(filePath, 'utf-8', (err: any, content: any) => {
+      fs.readFile(filePath, 'utf8', (err: any, content: any) => {
         if (err) {
           reject(err);
         } else {
@@ -58,7 +58,7 @@ export class NodeFs implements d.FileSystem {
   }
 
   readFileSync(filePath: string) {
-    return fs.readFileSync(filePath, 'utf-8');
+    return fs.readFileSync(filePath, 'utf8');
   }
 
   rmdir(filePath: string) {
@@ -103,7 +103,7 @@ export class NodeFs implements d.FileSystem {
 
   writeFile(filePath: string, content: string) {
     return new Promise<void>((resolve, reject) => {
-      fs.writeFile(filePath, content, { encoding: 'utf-8' }, (err: any) => {
+      fs.writeFile(filePath, content, { encoding: 'utf8' }, (err: any) => {
         if (err) {
           reject(err);
         } else {
@@ -114,7 +114,7 @@ export class NodeFs implements d.FileSystem {
   }
 
   writeFileSync(filePath: string, content: string) {
-    return fs.writeFileSync(filePath, content, { encoding: 'utf-8' });
+    return fs.writeFileSync(filePath, content, { encoding: 'utf8' });
   }
 
 }

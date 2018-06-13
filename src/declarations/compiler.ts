@@ -31,4 +31,8 @@ export interface CompilerCtx {
   localPrerenderServer?: any;
   lastBuildResults?: d.BuildResults;
   hasWatcher?: boolean;
+  tsService?: TsService;
+  rootTsFiles?: string[];
 }
+
+export type TsService = (compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx, tsFilePaths: string[]) => Promise<any>;

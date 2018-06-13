@@ -5,14 +5,15 @@ export interface BuildCtx {
   aborted: boolean;
   appFileBuildCount: number;
   buildId: number;
+  buildResults: d.BuildResults;
   bundleBuildCount: number;
-  collections?: d.Collection[];
+  collections: d.Collection[];
   components: string[];
-  componentRefs?: d.PotentialComponentRef[];
-  data?: any;
+  createTimeSpan(msg: string, debug?: boolean): d.LoggerTimeSpan;
+  data: any;
   diagnostics: d.Diagnostic[];
-  dirsDeleted: string[];
   dirsAdded: string[];
+  dirsDeleted: string[];
   entryModules: d.EntryModule[];
   entryPoints: d.EntryPoint[];
   externalStylesUpdated: string[];
@@ -21,20 +22,22 @@ export interface BuildCtx {
   filesDeleted: string[];
   filesUpdated: string[];
   filesWritten: string[];
-  finish?(): Promise<BuildResults>;
-  global?: d.ModuleFile;
-  graphData?: GraphData;
-  hasChangedJsText: boolean;
-  hasSlot?: boolean;
-  hasSvg?: boolean;
+  finish(): Promise<BuildResults>;
+  global: d.ModuleFile;
+  graphData: GraphData;
+  hasFinished: boolean;
+  hasSlot: boolean;
+  hasSvg: boolean;
   indexBuildCount: number;
-  moduleGraphs?: d.ModuleGraph[];
   requiresFullBuild: boolean;
-  shouldAbort?(): boolean;
+  shouldAbort(): boolean;
   startTime: number;
   stylesUpdated: { [styleId: string]: string };
   timeSpan: d.LoggerTimeSpan;
   transpileBuildCount: number;
+  validateTypesHandler?: (diagnostics: d.Diagnostic[]) => void;
+  validateTypesPromise?: Promise<d.Diagnostic[]>;
+  validateTypesBuild?(): Promise<void>;
 }
 
 
@@ -56,7 +59,6 @@ export interface BuildResults {
   filesDeleted: string[];
   filesUpdated: string[];
   filesWritten: string[];
-  hasChangedJsText: boolean;
   hasError: boolean;
   hotReload?: HotReloadData;
   hasSlot: boolean;
@@ -144,12 +146,6 @@ export interface FilesMap {
 
 
 export type CompilerEventName = 'fileUpdate' | 'fileAdd' | 'fileDelete' | 'dirAdd' | 'dirDelete' | 'build' | 'rebuild';
-
-export interface TranspileResults {
-  code?: string;
-  diagnostics?: d.Diagnostic[];
-  cmpMeta?: d.ComponentMeta;
-}
 
 
 export interface JSModuleList {
