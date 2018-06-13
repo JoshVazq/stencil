@@ -7,7 +7,7 @@ export interface DevServerConfig {
   devServerDir?: string;
   gzip?: boolean;
   historyApiFallback?: HistoryApiFallback;
-  hotReload?: boolean;
+  hotReplacement?: boolean;
   openBrowser?: boolean;
   openUrl?: string;
   port?: number;

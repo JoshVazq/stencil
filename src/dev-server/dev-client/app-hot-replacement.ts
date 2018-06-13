@@ -1,27 +1,27 @@
 import  * as d from '../../declarations';
 
 
-export function appHotReload(win: d.DevClientWindow, doc: Document, hotReload: d.HotReloadData) {
-  if (hotReload.windowReload) {
+export function appHotReplacement(win: d.DevClientWindow, doc: Document, hmr: d.HotReplacement) {
+  if (hmr.windowReload) {
     win.location.reload(true);
     return;
   }
 
-  if (hotReload.componentsUpdated) {
+  if (hmr.componentsUpdated) {
     if (supportsDynamicImports()) {
-      reloadComponents(doc, hotReload.componentsUpdated);
+      reloadComponents(doc, hmr.componentsUpdated);
     } else {
       win.location.reload(true);
       return;
     }
   }
 
-  if (hotReload.stylesUpdated) {
-    reloadStyles(doc, hotReload.stylesUpdated);
+  if (hmr.stylesUpdated) {
+    reloadStyles(doc, hmr.stylesUpdated);
   }
 
-  if (hotReload.externalStylesUpdated) {
-    reloadExternalStyles(doc, hotReload.externalStylesUpdated);
+  if (hmr.externalStylesUpdated) {
+    reloadExternalStyles(doc, hmr.externalStylesUpdated);
   }
 }
 

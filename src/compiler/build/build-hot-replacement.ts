@@ -1,12 +1,12 @@
 import * as d from '../../declarations';
 
 
-export function genereateHotReload(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
-  if (!compilerCtx.isRebuild || !config.devServer || !config.devServer.hotReload) {
+export function genereateHotReplacement(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
+  if (!compilerCtx.isRebuild || !config.devServer || !config.devServer.hotReplacement) {
     return null;
   }
 
-  const hotReload: d.HotReloadData = {};
+  const hotReload: d.HotReplacement = {};
 
   const componentsUpdated = getComponentsUpdated(compilerCtx, buildCtx);
 

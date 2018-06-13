@@ -60,16 +60,16 @@ export interface BuildResults {
   filesUpdated: string[];
   filesWritten: string[];
   hasError: boolean;
-  hotReload?: HotReloadData;
   hasSlot: boolean;
   hasSuccessfulBuild: boolean;
   hasSvg: boolean;
+  hmr?: HotReplacement;
   isRebuild: boolean;
   transpileBuildCount: number;
 }
 
 
-export interface HotReloadData {
+export interface HotReplacement {
   componentsUpdated?: string[];
   externalStylesUpdated?: string[];
   stylesUpdated?: { [styleId: string]: string };

@@ -94,7 +94,7 @@ function mainReceivedMessageFromServer(config: d.Config, compilerCtx: d.Compiler
       const msg: d.DevServerMessage = {
         buildResults: Object.assign({}, compilerCtx.lastBuildResults)
       };
-      delete msg.buildResults.hotReload;
+      delete msg.buildResults.hmr;
       delete msg.buildResults.entries;
       delete msg.buildResults.components;
 

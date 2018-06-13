@@ -1,6 +1,6 @@
 import  * as d from '../../declarations';
 import { appError, clearDevServerModal } from './app-error';
-import { appHotReload } from './app-hot-reload';
+import { appHotReplacement } from './app-hot-replacement';
 
 
 export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document, buildResults: d.BuildResults) {
@@ -28,8 +28,8 @@ export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow,
     }
 
     // let's hot reload what we can from the build results
-    if (buildResults.hotReload) {
-      appHotReload(win, doc, buildResults.hotReload);
+    if (buildResults.hmr) {
+      appHotReplacement(win, doc, buildResults.hmr);
     }
 
   } catch (e) {

@@ -2,7 +2,7 @@ import * as d from '../../declarations';
 import { cleanDiagnostics } from '../../util/logger/logger-util';
 import { DEFAULT_STYLE_MODE, ENCAPSULATION } from '../../util/constants';
 import { hasError, normalizePath } from '../util';
-import { genereateHotReload } from './build-hot-reload';
+import { genereateHotReplacement } from './build-hot-replacement';
 
 
 export async function generateBuildResults(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
@@ -36,9 +36,9 @@ export async function generateBuildResults(config: d.Config, compilerCtx: d.Comp
     }))
   };
 
-  const hotReload = genereateHotReload(config, compilerCtx, buildCtx);
-  if (hotReload) {
-    buildResults.hotReload = hotReload;
+  const hmr = genereateHotReplacement(config, compilerCtx, buildCtx);
+  if (hmr) {
+    buildResults.hmr = hmr;
   }
 
   buildResults.entries.forEach(en => {
