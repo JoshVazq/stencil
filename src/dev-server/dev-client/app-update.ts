@@ -17,18 +17,18 @@ export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow,
 
     if (ctx.isInitialDevServerLoad) {
       // this page is the initial dev server loading page
-      // and build has finished without errors
+      // and the build has finished without errors
       // let's make sure the url is at the root
-      // and we're unregistered any existing service workers
-      // then let's refresh the page from the root
+      // and we've unregistered any existing service workers
+      // then let's refresh the page from the root of the server
       appReset(win).then(() => {
         win.location.reload(true);
       });
       return;
     }
 
-    // let's hot reload what we can from the build results
     if (buildResults.hmr) {
+      // let's do some hot module replacement shall we
       appHotReplacement(win, doc, buildResults.hmr);
     }
 

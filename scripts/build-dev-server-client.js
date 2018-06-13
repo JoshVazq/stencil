@@ -70,7 +70,7 @@ if (success) {
 
   process.on('exit', (code) => {
     fs.removeSync(TRANSPILED_DIR);
-    console.log(`✅ dev server client: ${outputFile}`);
+    console.log(`✅ dev.server.client: ${outputFile}`);
   });
 
 }

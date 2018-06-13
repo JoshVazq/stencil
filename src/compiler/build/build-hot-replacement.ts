@@ -14,7 +14,7 @@ export function genereateHotReplacement(config: d.Config, compilerCtx: d.Compile
     hotReload.componentsUpdated = componentsUpdated;
   }
 
-  if (buildCtx.stylesUpdated) {
+  if (buildCtx.stylesUpdated && Object.keys(buildCtx.stylesUpdated).length > 0) {
     hotReload.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
   }
 

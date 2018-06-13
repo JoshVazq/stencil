@@ -60,9 +60,7 @@ export interface BuildResults {
   filesUpdated: string[];
   filesWritten: string[];
   hasError: boolean;
-  hasSlot: boolean;
   hasSuccessfulBuild: boolean;
-  hasSvg: boolean;
   hmr?: HotReplacement;
   isRebuild: boolean;
   transpileBuildCount: number;

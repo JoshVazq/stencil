@@ -34,6 +34,9 @@ function reloadComponents(doc: Document, componentsUpdated: string[]) {
 
 
 function reloadComponent(elm: Element, tagName: string) {
+  // drill down through every node in the page
+  // to include shadow roots and look for this
+  // component tag to run hmr() on
   if (elm.nodeName.toLowerCase() === tagName) {
     (elm as any)['s-hmr'] && (elm as any)['s-hmr']();
   }

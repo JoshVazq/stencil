@@ -26,8 +26,6 @@ export async function generateBuildResults(config: d.Config, compilerCtx: d.Comp
     filesDeleted: buildCtx.filesDeleted.slice().sort(),
     dirsAdded: buildCtx.dirsAdded.slice().sort(),
     dirsDeleted: buildCtx.dirsDeleted.slice().sort(),
-    hasSlot: !!buildCtx.hasSlot,
-    hasSvg: !!buildCtx.hasSvg,
 
     components: [],
 
