@@ -55,11 +55,19 @@ export class WatcherListener {
       }
 
       if (isWebDevFileToWatch(filePath)) {
+        // check if the file changed with a read the file, but without using
+        // the cache so we know if it actually changed or not
+        const hasChanged = await this.compilerCtx.fs.hasFileChanged(filePath);
+        if (!hasChanged) {
+          this.config.logger.debug(`watcher, fileUpdate, file unchanged: ${relPath}, ${Date.now().toString().substring(5)}`);
+          return;
+        }
+
         this.config.logger.debug(`watcher, fileUpdate: ${relPath}, ${Date.now().toString().substring(5)}`);
 
         // read the file, but without using
         // the cache so we get the latest change
-        await this.compilerCtx.fs.readFile(filePath);
+        await this.compilerCtx.fs.readFile(filePath, { useCache: false });
 
         // web dev file was updaed
         // queue change build

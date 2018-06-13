@@ -9,12 +9,11 @@ export function genereateHotReplacement(config: d.Config, compilerCtx: d.Compile
   const hotReload: d.HotReplacement = {};
 
   const componentsUpdated = getComponentsUpdated(compilerCtx, buildCtx);
-
   if (componentsUpdated) {
     hotReload.componentsUpdated = componentsUpdated;
   }
 
-  if (buildCtx.stylesUpdated && Object.keys(buildCtx.stylesUpdated).length > 0) {
+  if (Object.keys(buildCtx.stylesUpdated).length > 0) {
     hotReload.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
   }
 
@@ -23,18 +22,24 @@ export function genereateHotReplacement(config: d.Config, compilerCtx: d.Compile
     hotReload.externalStylesUpdated = getExternalStylesUpdated(config, compilerCtx, buildCtx);
   }
 
+  if (Object.keys(hotReload).length === 0) {
+    return null;
+  }
+
   return hotReload;
 }
 
 
 function getComponentsUpdated(compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
   // find all of the components that would be affected from the file changes
-  const filesChanged = buildCtx.filesChanged;
-  if (!filesChanged) {
+  if (!buildCtx.filesChanged) {
     return null;
   }
 
-  const changedScriptFiles = filesChanged.filter(f => f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js'));
+  const changedScriptFiles = buildCtx.filesChanged.filter(f => {
+    return f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js');
+  });
+
   if (changedScriptFiles.length === 0) {
     return null;
   }
@@ -59,6 +64,7 @@ function addComponentsUpdated(allModuleFiles: d.ModuleFile[], componentsUpdated:
     if (moduleFile.cmpMeta) {
       const checkedFiles: string[] = [];
       const shouldAdd = addComponentUpdated(allModuleFiles, componentsUpdated, changedScriptFile, checkedFiles, moduleFile);
+
       if (shouldAdd && !componentsUpdated.includes(moduleFile.cmpMeta.tagNameMeta)) {
         componentsUpdated.push(moduleFile.cmpMeta.tagNameMeta);
       }

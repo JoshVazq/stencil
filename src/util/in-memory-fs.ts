@@ -239,6 +239,25 @@ export class InMemoryFileSystem implements d.InMemoryFileSystem {
     }));
   }
 
+  async hasFileChanged(filePath: string) {
+    let hasFileChanged = true;
+
+    try {
+      const item = this.getItem(filePath);
+      const fileExists = item.exists && item.isFile;
+      const oldContent = item.fileText;
+
+      const newContent = await this.readFile(filePath, { useCache: false });
+
+      if (fileExists) {
+        hasFileChanged = (oldContent !== newContent);
+      }
+
+    } catch (e) {}
+
+    return hasFileChanged;
+  }
+
   async readFile(filePath: string, opts?: d.FsReadOptions) {
     if (!opts || (opts.useCache === true || opts.useCache === undefined)) {
       const item = this.getItem(filePath);
