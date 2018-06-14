@@ -19,6 +19,10 @@ export async function generateAppFiles(config: d.Config, compilerCtx: d.Compiler
     return outputTarget.appBuild;
   });
 
+  if (outputTargets.length === 0) {
+    return;
+  }
+
   const timespan = buildCtx.createTimeSpan(`generate app files started`);
 
   await Promise.all(outputTargets.map(async outputTarget => {

@@ -4,7 +4,7 @@ import { appUpdate } from './app-update';
 
 export function initClientWebSocket(ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document) {
   try {
-    const ClientWebSocket = win.MozWebSocket || win.WebSocket;
+    const ClientWebSocket = win.WebSocket;
     const protos = ['xmpp'];
 
     // have the browser open a web socket with the server
