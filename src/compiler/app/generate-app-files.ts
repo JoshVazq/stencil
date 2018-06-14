@@ -6,13 +6,12 @@ import { generateCoreBrowser } from './app-core-browser';
 import { generateEsmCore } from './app-core-esm';
 import { generateEsmHosts } from '../distribution/dist-esm';
 import { generateEs5DisabledMessage } from './app-es5-disabled';
-import { generateGlobalStyles } from './app-global-styles';
 import { generateLoader } from './app-loader';
 import { setBuildConditionals } from './build-conditionals';
 
 
 export async function generateAppFiles(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx, entryModules: d.EntryModule[], cmpRegistry: d.ComponentRegistry) {
-  if (buildCtx.shouldAbort()) {
+  if (canSkipBuild(compilerCtx, buildCtx)) {
     return;
   }
 
@@ -57,9 +56,6 @@ export async function generateAppFilesOutputTarget(config: d.Config, compilerCtx
       // create the loader(s) after creating the loader file name
       generateLoader(config, compilerCtx, buildCtx, outputTarget, appRegistry, cmpRegistry),
 
-      // create the global styles
-      generateGlobalStyles(config, compilerCtx, buildCtx, outputTarget),
-
       // create the custom elements file
       generateEsmHosts(config, compilerCtx, cmpRegistry, outputTarget)
     ]);
@@ -98,3 +94,19 @@ async function generateBrowserCoreEs5(config: d.Config, compilerCtx: d.CompilerC
   }
 }
 
+
+function canSkipBuild(compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
+  if (buildCtx.shouldAbort()) {
+    return true;
+  }
+
+  if (compilerCtx.isRebuild) {
+    if (buildCtx.filesChanged.some(f => f.endsWith('.tsx') || f.endsWith('.ts') || f.endsWith('.js'))) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return false;
+}

@@ -62,6 +62,7 @@
 .dev-server-diagnostic-file {
   position: relative;
   border-top: 1px solid #ddd;
+  overflow: scroll;
 }
 
 .dev-server-diagnostic-file-header {
@@ -70,6 +71,10 @@
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   background-color: #f8f8f8;
+}
+
+.dev-server-diagnostic-file-name {
+  font-weight: bold;
 }
 
 .dev-server-diagnostic-blob {

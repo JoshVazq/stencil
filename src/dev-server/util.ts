@@ -30,21 +30,6 @@ export function sendError(process: NodeJS.Process, e: any) {
 }
 
 
-export function getClientSideConfig(devServerConfig: d.DevServerConfig) {
-  const openUrl = getBrowserUrl(devServerConfig, UNREGISTER_SW_URL);
-
-  const clientConfig: d.DevServerClientConfig = {
-    protocol: devServerConfig.protocol,
-    address: devServerConfig.address,
-    port: devServerConfig.port,
-    openUrl: openUrl,
-    hotReload: devServerConfig.hotReplacement
-  };
-
-  return clientConfig;
-}
-
-
 export function getBrowserUrl(devServerConfig: d.DevServerConfig, pathname = '/') {
   const address = (devServerConfig.address === `0.0.0.0`) ? `localhost` : devServerConfig.address;
   const port = (devServerConfig.port === 80 || devServerConfig.port === 443) ? '' : (':' + devServerConfig.port);
@@ -87,7 +72,12 @@ export function isInitialDevServerLoad(pathname: string) {
 }
 
 
-export const DEV_SERVER_URL = '/__dev-server';
+export function isDevServerClient(pathname: string) {
+  return pathname === DEV_SERVER_URL;
+}
+
+
+export const DEV_SERVER_URL = '/~dev-server';
 
 export const UNREGISTER_SW_URL = `${DEV_SERVER_URL}-init`;
 

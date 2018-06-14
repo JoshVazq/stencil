@@ -1,6 +1,5 @@
 import * as d from '../declarations';
-import { DEV_SERVER_URL, getContentType, isHtmlFile, isInitialDevServerLoad, isSimpleText, shouldCompress } from './util';
-import { injectDevServerScripts } from './inject-scripts';
+import { DEV_SERVER_URL, getContentType, isDevServerClient, isHtmlFile, isInitialDevServerLoad, isSimpleText, shouldCompress } from './util';
 import { serve404, serve500 } from './serve-error';
 import * as http  from 'http';
 import * as path from 'path';
@@ -14,9 +13,9 @@ export async function serveFile(devServerConfig: d.DevServerConfig, fs: d.FileSy
       // easy text file, use the internal cache
       let content = await fs.readFile(req.filePath);
 
-      if (isHtmlFile(req.filePath)) {
+      if (isHtmlFile(req.filePath) && !isDevServerClient(req.pathname)) {
         // auto inject our dev server script
-        content += injectDevServerScripts(devServerConfig);
+        content += injectDevServerClient();
       }
 
       const contentLength = Buffer.byteLength(content, 'utf8');
@@ -62,7 +61,10 @@ export async function serveFile(devServerConfig: d.DevServerConfig, fs: d.FileSy
 
 export async function serveStaticDevClient(devServerConfig: d.DevServerConfig, fs: d.FileSystem, req: d.HttpRequest, res: http.ServerResponse) {
   try {
-    if (isInitialDevServerLoad(req.pathname)) {
+    if (isDevServerClient(req.pathname)) {
+      req.filePath = path.join(devServerConfig.devServerDir, 'static', 'dev-server-client.html');
+
+    } else if (isInitialDevServerLoad(req.pathname)) {
       req.filePath = path.join(devServerConfig.devServerDir, 'templates', 'initial-load.html');
 
     } else {
@@ -80,4 +82,9 @@ export async function serveStaticDevClient(devServerConfig: d.DevServerConfig, f
   } catch (e) {
     return serve500(res, e);
   }
+}
+
+
+function injectDevServerClient() {
+  return `\n<iframe src="${DEV_SERVER_URL}" style="width:0;height:0;border:0"></iframe>`;
 }

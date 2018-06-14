@@ -16,15 +16,6 @@ export interface DevServerConfig {
 }
 
 
-export interface DevServerClientConfig {
-  address: string;
-  hotReload: boolean;
-  openUrl: string;
-  port: number;
-  protocol: 'http' | 'https';
-}
-
-
 export interface DevServerClientContext {
   hasClientInitialized?: boolean;
   isInitialDevServerLoad?: boolean;
@@ -32,7 +23,6 @@ export interface DevServerClientContext {
 
 
 export interface DevClientWindow extends Window {
-  's-dev-server': DevServerClientConfig;
   MozWebSocket: new (socketUrl: string, protos: string[]) => DevClientSocket;
   WebSocket: new (socketUrl: string, protos: string[]) => DevClientSocket;
 }
@@ -79,7 +69,7 @@ export interface DevServerSocket {
 
 export interface DevServerMessage {
   startServer?: DevServerConfig;
-  serverStated?: DevServerClientConfig;
+  serverStated?: DevServerConfig;
   buildResults?: d.BuildResults;
   requestBuildResults?: boolean;
   error?: { message?: string; type?: string; stack?: any; };

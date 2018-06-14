@@ -3,13 +3,8 @@ import { appReset } from './app-update';
 import { initClientWebSocket } from './client-web-socket';
 
 
-export function initClient(devServerConfig: d.DevServerClientConfig, ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document) {
+export function initClient(ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document) {
   try {
-    if (!devServerConfig) {
-      console.error(`invalid client-side dev server config`);
-      return;
-    }
-
     if (ctx.hasClientInitialized) {
       // somehow we've already initialized the dev server client-side script
       // don't bother doing it again (this shouldn't happen)

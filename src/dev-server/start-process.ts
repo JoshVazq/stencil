@@ -8,7 +8,7 @@ import { sendMsg } from './util';
  * it is not apart of the dev-server/index.js bundle
  */
 
-export function startDevServerProcess(config: d.Config, compilerCtx: d.CompilerCtx): Promise<d.DevServerClientConfig> {
+export function startDevServerProcess(config: d.Config, compilerCtx: d.CompilerCtx) {
   const fork = require('child_process').fork;
 
   // using the path stuff below because after the the bundles are created
@@ -32,7 +32,7 @@ export function startDevServerProcess(config: d.Config, compilerCtx: d.CompilerC
 
 
 function startServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess: NodeJS.Process) {
-  return new Promise<d.DevServerClientConfig>((resolve, reject) => {
+  return new Promise<d.DevServerConfig>((resolve, reject) => {
     serverProcess.stdout.on('data', (data: any) => {
       // the child server process has console logged data
       config.logger.debug(`dev server: ${data}`);
@@ -73,11 +73,7 @@ function startServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess
 function mainReceivedMessageFromServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess: any, msg: d.DevServerMessage, resolve: (devServerConfig: any) => void) {
   if (msg.serverStated) {
     // received a message from the child process that the server has successfully started
-    config.devServer.protocol = msg.serverStated.protocol;
-    config.devServer.address = msg.serverStated.address;
-    config.devServer.port = msg.serverStated.port;
-
-    if (config.devServer.openBrowser) {
+    if (config.devServer.openBrowser && msg.serverStated.openUrl) {
       config.sys.open(msg.serverStated.openUrl);
     }
 

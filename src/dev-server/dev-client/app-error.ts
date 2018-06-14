@@ -1,4 +1,5 @@
 import * as d from '../../declarations';
+import { DEV_SERVER_URL } from '../util';
 
 
 export function appError(doc: Document, buildResults: d.BuildResults) {
@@ -9,7 +10,7 @@ export function appError(doc: Document, buildResults: d.BuildResults) {
   const modal = getDevServerModal(doc);
 
   buildResults.diagnostics.forEach(diagnostic => {
-    consoleLogError(diagnostic);
+    consoleLogDiagnostics(diagnostic);
     appendDiagnostic(doc, modal, diagnostic);
   });
 }
@@ -38,11 +39,26 @@ function appendDiagnostic(doc: Document, modal: HTMLElement, diagnostic: d.Diagn
   file.className = 'dev-server-diagnostic-file';
   card.appendChild(file);
 
-  if (diagnostic.absFilePath) {
+  if (diagnostic.relFilePath) {
     const fileHeader = doc.createElement('div');
     fileHeader.className = 'dev-server-diagnostic-file-header';
-    fileHeader.title = escapeHtml(diagnostic.absFilePath);
-    fileHeader.textContent = diagnostic.relFilePath;
+
+    if (diagnostic.absFilePath) {
+      fileHeader.title = escapeHtml(diagnostic.absFilePath);
+    }
+
+    const parts = diagnostic.relFilePath.split('/');
+
+    const fileName = doc.createElement('span');
+    fileName.className = 'dev-server-diagnostic-file-name';
+    fileName.textContent = parts.pop();
+
+    const filePath = doc.createElement('span');
+    filePath.className = 'dev-server-diagnostic-file-path';
+    filePath.textContent = parts.join('/') + '/';
+
+    fileHeader.appendChild(filePath);
+    fileHeader.appendChild(fileName);
     file.appendChild(fileHeader);
   }
 
@@ -53,9 +69,9 @@ function appendDiagnostic(doc: Document, modal: HTMLElement, diagnostic: d.Diagn
 
     const table = doc.createElement('table');
     table.className = 'dev-server-diagnostic-table';
-    file.appendChild(table);
+    blob.appendChild(table);
 
-    prepareLines(diagnostic.lines, 'html').forEach(l => {
+    prepareLines(diagnostic.lines).forEach(l => {
       const tr = doc.createElement('tr');
       if (l.errorCharStart > -1) {
         tr.className = 'dev-server-diagnostic-error-line';
@@ -69,7 +85,7 @@ function appendDiagnostic(doc: Document, modal: HTMLElement, diagnostic: d.Diagn
 
       const tdCode = doc.createElement('td');
       tdCode.className = 'dev-server-diagnostic-blob-code';
-      tdCode.innerHTML = highlightError(l.html, l.errorCharStart, l.errorLength);
+      tdCode.innerHTML = highlightError(l.text, l.errorCharStart, l.errorLength);
       tr.appendChild(tdCode);
     });
   }
@@ -88,28 +104,52 @@ function getDevServerModal(doc: Document) {
 
   outer.innerHTML = `
     <style>#${DEV_SERVER_MODAL} { display: none; }</style>
-    <link href="/__dev-server/app-error.css" rel="stylesheet">
+    <link href="${DEV_SERVER_URL}/app-error.css" rel="stylesheet">
     <div id="${DEV_SERVER_MODAL}-inner"></div>
   `;
 
   return doc.getElementById(`${DEV_SERVER_MODAL}-inner`);
 }
 
+const YELLOW = `#f39c12`;
+const RED = `#c0392b`;
 
-function consoleLogError(diagnostic: d.Diagnostic) {
-  const msg: string[] = [];
+function consoleLogDiagnostics(diagnostic: d.Diagnostic) {
+  let color = RED;
+  let prefix = 'Error';
+
+  if (diagnostic.level === 'warn') {
+    color = YELLOW;
+    prefix = 'Warning';
+  }
 
   if (diagnostic.header) {
-    msg.push(diagnostic.header);
+    prefix = diagnostic.header;
   }
 
-  if (diagnostic.messageText) {
-    msg.push(diagnostic.messageText);
+  const styledPrefix = [
+    '%c' + prefix,
+    `background: ${color}; color: white; padding: 2px 3px; border-radius: 2px; font-size: 0.8em;`
+  ];
+
+  let msg = ``;
+
+  if (diagnostic.relFilePath) {
+    msg += diagnostic.relFilePath;
+
+    if (typeof diagnostic.lineNumber === 'number' && diagnostic.lineNumber > 0) {
+      msg += ', line ' + diagnostic.lineNumber;
+
+      if (typeof diagnostic.columnNumber === 'number' && diagnostic.columnNumber > 0) {
+        msg += ', column ' + diagnostic.columnNumber;
+      }
+    }
+    msg += `\n`;
   }
 
-  if (msg.length > 0) {
-    console.error(msg.join('\n'));
-  }
+  msg += diagnostic.messageText;
+
+  console.log(...styledPrefix, msg);
 }
 
 
@@ -194,17 +234,18 @@ function highlightError(htmlInput: string, errorCharStart: number, errorLength: 
   return chars.join('');
 }
 
-function prepareLines(orgLines: d.PrintLine[], code: 'text'|'html') {
+
+function prepareLines(orgLines: d.PrintLine[]) {
   const lines: d.PrintLine[] = JSON.parse(JSON.stringify(orgLines));
 
   for (let i = 0; i < 100; i++) {
-    if (!eachLineHasLeadingWhitespace(lines, code)) {
+    if (!eachLineHasLeadingWhitespace(lines)) {
       return lines;
     }
     for (let i = 0; i < lines.length; i++) {
-      (<any>lines[i])[code] = (<any>lines[i])[code].substr(1);
+      lines[i].text = lines[i].text.substr(1);
       lines[i].errorCharStart--;
-      if (!(<any>lines[i])[code].length) {
+      if (!lines[i].text.length) {
         return lines;
       }
     }
@@ -214,19 +255,21 @@ function prepareLines(orgLines: d.PrintLine[], code: 'text'|'html') {
 }
 
 
-function eachLineHasLeadingWhitespace(lines: d.PrintLine[], code: 'text'|'html') {
+function eachLineHasLeadingWhitespace(lines: d.PrintLine[]) {
   if (!lines.length) {
     return false;
   }
-  for (var i = 0; i < lines.length; i++) {
-    if ( !(<any>lines[i])[code] || (<any>lines[i])[code].length < 1) {
+
+  for (let i = 0; i < lines.length; i++) {
+    if (!(lines[i].text) || lines[i].text.length < 1) {
       return false;
     }
-    const firstChar = (<any>lines[i])[code].charAt(0);
+    const firstChar = lines[i].text.charAt(0);
     if (firstChar !== ' ' && firstChar !== '\t') {
       return false;
     }
   }
+
   return true;
 }
 

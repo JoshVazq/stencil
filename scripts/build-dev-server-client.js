@@ -11,7 +11,7 @@ const DEV_CLIENT_SRC_STATIC_DIR = path.join(ROOT_DIR, 'src', 'dev-server', 'stat
 const DEV_CLIENT_OUTPUT_DIR = path.join(DST_DIR, 'dev-server', 'static');
 
 const inputFile = path.join(DEV_CLIENT_INPUT_DIR, 'index.js');
-const outputFile = path.join(DEV_CLIENT_OUTPUT_DIR, 'dev-server.js');
+const outputFile = path.join(DEV_CLIENT_OUTPUT_DIR, 'dev-server-client.html');
 
 const success = transpile(path.join('..', 'src', 'dev-server', 'dev-client', 'tsconfig.json'));
 
@@ -35,12 +35,19 @@ if (success) {
       bundle.generate({
         format: 'es',
 
-        banner: '/* Dev Server Script */\n',
+        banner: [
+          '<meta charset="utf-8">',
+          '💎 Stencil Dev Server',
+          '<script>',
+          '/* Dev Server Client */'
+        ].join('\n'),
 
         intro: '(function(window, document) {\n' +
               '"use strict";',
 
-        outro: '})(window, document);'
+        outro: '})(window, document);',
+
+        footer: '</script>'
 
       }).then(clientCore => {
 
