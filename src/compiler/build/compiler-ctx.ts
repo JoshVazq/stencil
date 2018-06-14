@@ -46,6 +46,9 @@ export function resetCompilerCtx(compilerCtx: d.CompilerCtx) {
   compilerCtx.resolvedCollections.length = 0;
   compilerCtx.compiledModuleJsText = {};
   compilerCtx.compiledModuleLegacyJsText = {};
+  compilerCtx.compilerOptions = null;
+  compilerCtx.tsService = null;
+  compilerCtx.rootTsFiles = null;
 
   // do NOT reset 'hasSuccessfulBuild'
 }
