@@ -65,10 +65,6 @@ export class WatcherListener {
 
         this.config.logger.debug(`watcher, fileUpdate: ${relPath}, ${Date.now().toString().substring(5)}`);
 
-        // read the file, but without using
-        // the cache so we get the latest change
-        await this.compilerCtx.fs.readFile(filePath, { useCache: false });
-
         // web dev file was updaed
         // queue change build
         if (!this.filesUpdated.includes(filePath)) {
