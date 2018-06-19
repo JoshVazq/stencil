@@ -2,7 +2,7 @@ import * as d from '../../declarations';
 
 
 export function genereateHotReplacement(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
-  if (!compilerCtx.isRebuild || !config.devServer || !config.devServer.hotReplacement) {
+  if (!buildCtx.isRebuild || !config.devServer || !config.devServer.hotReplacement) {
     return null;
   }
 
@@ -17,9 +17,9 @@ export function genereateHotReplacement(config: d.Config, compilerCtx: d.Compile
     hotReload.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
   }
 
-  const externalStylesUpdated = getExternalStylesUpdated(config, compilerCtx, buildCtx);
+  const externalStylesUpdated = getExternalStylesUpdated(config, buildCtx);
   if (externalStylesUpdated) {
-    hotReload.externalStylesUpdated = getExternalStylesUpdated(config, compilerCtx, buildCtx);
+    hotReload.externalStylesUpdated = getExternalStylesUpdated(config, buildCtx);
   }
 
   if (Object.keys(hotReload).length === 0) {
@@ -97,8 +97,8 @@ function addComponentUpdated(allModuleFiles: d.ModuleFile[], componentsUpdated: 
 }
 
 
-function getExternalStylesUpdated(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
-  if (!compilerCtx.isRebuild) {
+function getExternalStylesUpdated(config: d.Config, buildCtx: d.BuildCtx) {
+  if (!buildCtx.isRebuild) {
     return null;
   }
 

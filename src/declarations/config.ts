@@ -12,7 +12,7 @@ export interface Config {
   cwd?: string;
   nodeResolve?: NodeResolveConfig;
   configPath?: string;
-  copy?: CopyTasks;
+  copy?: d.CopyTask[];
   devInspector?: boolean;
   devMode?: boolean;
   devServer?: d.DevServerConfig;
@@ -45,11 +45,6 @@ export interface Config {
   writeLog?: boolean;
   _isValidated?: boolean;
   _isTesting?: boolean;
-
-  /**
-   * DEPRECATED "config.collections" since 0.6.0, 2018-02-13
-   */
-  _deprecatedCollections?: ConfigCollection[];
 }
 
 
@@ -159,25 +154,6 @@ export interface ConfigAssetVersioning {
 
 export interface ConfigBundle {
   components: string[];
-}
-
-
-export interface ConfigCollection {
-  name: string;
-}
-
-
-export interface CopyTasks {
-  [copyTaskName: string]: CopyTask;
-}
-
-
-export interface CopyTask {
-  src?: string;
-  dest?: string;
-  filter?: (from?: string, to?: string) => boolean;
-  isDirectory?: boolean;
-  warn?: boolean;
 }
 
 

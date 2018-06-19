@@ -19,15 +19,16 @@ export function getModuleFile(compilerCtx: d.CompilerCtx, sourceFilePath: string
 export function getCompilerCtx(config: d.Config, compilerCtx?: d.CompilerCtx) {
   // reusable data between builds
   compilerCtx = compilerCtx || {};
-  compilerCtx.fs = compilerCtx.fs || new InMemoryFileSystem(config.sys.fs, config.sys.path);
-  compilerCtx.cache = compilerCtx.cache || new Cache(config, new InMemoryFileSystem(config.sys.fs, config.sys.path), config.sys.tmpdir());
-  compilerCtx.events = compilerCtx.events || new BuildEvents(config);
+  compilerCtx.fs = compilerCtx.fs || new InMemoryFileSystem(config.sys.fs, config.sys);
+  compilerCtx.cache = compilerCtx.cache || new Cache(config, new InMemoryFileSystem(config.sys.fs, config.sys), config.sys.tmpdir());
+  compilerCtx.events = compilerCtx.events || new BuildEvents();
   compilerCtx.appFiles = compilerCtx.appFiles || {};
   compilerCtx.moduleFiles = compilerCtx.moduleFiles || {};
   compilerCtx.collections = compilerCtx.collections || [];
   compilerCtx.resolvedCollections = compilerCtx.resolvedCollections || [];
   compilerCtx.compiledModuleJsText = compilerCtx.compiledModuleJsText || {};
   compilerCtx.compiledModuleLegacyJsText = compilerCtx.compiledModuleLegacyJsText || {};
+  compilerCtx.lastStyleText = compilerCtx.lastStyleText || {};
 
   if (typeof compilerCtx.activeBuildId !== 'number') {
     compilerCtx.activeBuildId = -1;
@@ -47,6 +48,7 @@ export function resetCompilerCtx(compilerCtx: d.CompilerCtx) {
   compilerCtx.compiledModuleJsText = {};
   compilerCtx.compiledModuleLegacyJsText = {};
   compilerCtx.compilerOptions = null;
+  compilerCtx.lastStyleText = {};
   compilerCtx.tsService = null;
   compilerCtx.rootTsFiles = null;
 

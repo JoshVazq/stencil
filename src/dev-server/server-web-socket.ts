@@ -6,7 +6,7 @@ const WebSocket: d.DevServerSocketConstructor = require('faye-websocket');
 
 
 export function createWebSocketServer(server: http.Server) {
-  server.on('upgrade', (request, socket, body) => {
+  server.on('upgrade', (request: any, socket: any, body: any) => {
     if (WebSocket.isWebSocket(request)) {
       onWebSocketUpgrade(request, socket, body);
     }

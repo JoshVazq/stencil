@@ -1,5 +1,6 @@
 import * as d from '../declarations';
 import { build } from './build/build';
+import { BuildContext } from './build/build-ctx';
 import { catchError } from './util';
 import { docs } from './docs/docs';
 import { getCompilerCtx } from './build/compiler-ctx';
@@ -28,6 +29,11 @@ export class Compiler {
       this.config.logger.debug(`compiler runtime: ${this.config.sys.compiler.runtime}`);
       this.config.logger.debug(`compiler build: __BUILDID__`);
 
+      this.ctx.events.subscribe('build', (watchResults) => {
+        const buildCtx = new BuildContext(this.config, this.ctx, watchResults);
+        build(this.config, this.ctx, buildCtx);
+      });
+
       if (this.config.flags.serve) {
         this.startDevServer();
       }
@@ -46,17 +52,21 @@ export class Compiler {
   }
 
   build() {
-    return build(this.config, this.ctx);
+    const buildCtx = new BuildContext(this.config, this.ctx);
+    return build(this.config, this.ctx, buildCtx);
   }
 
   on(eventName: 'build', cb: (buildResults: d.BuildResults) => void): Function;
-  on(eventName: 'rebuild', cb: (buildResults: d.BuildResults) => void): Function;
-  on(eventName: any, cb: any) {
-    return this.ctx.events.subscribe(eventName, cb);
+  on(eventName: 'buildStart', cb: () => void): Function;
+  on(eventName: 'buildNoChange', cb: (buildResults: d.BuildNoChangeResults) => void): Function;
+  on(eventName: 'buildFinish', cb: (buildResults: d.BuildResults) => void): Function;
+  on(eventName: d.CompilerEventName, cb: any) {
+    return this.ctx.events.subscribe(eventName as any, cb);
   }
 
-  once(eventName: 'build'): Promise<d.BuildResults>;
-  once(eventName: 'rebuild'): Promise<d.BuildResults>;
+  once(eventName: 'buildStart'): Promise<void>;
+  once(eventName: 'buildFinish'): Promise<d.BuildResults>;
+  once(eventName: 'buildNoChange'): Promise<d.BuildNoChangeResults>;
   once(eventName: d.CompilerEventName) {
     return new Promise<any>(resolve => {
       const off = this.ctx.events.subscribe(eventName as any, (...args: any[]) => {

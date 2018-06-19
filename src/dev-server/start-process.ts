@@ -49,7 +49,7 @@ function startServer(config: d.Config, compilerCtx: d.CompilerCtx, serverProcess
       mainReceivedMessageFromServer(config, compilerCtx, serverProcess, msg, resolve);
     });
 
-    compilerCtx.events.subscribe('build', buildResults => {
+    compilerCtx.events.subscribe('buildFinish', buildResults => {
       // a compiler build has finished
       // send the build results to the child server process
       const msg: d.DevServerMessage = {
