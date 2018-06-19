@@ -1,7 +1,7 @@
-import { hotReloadExternalStyle } from '../app-hot-reload';
+import { reloadExternalStyle } from '../app-hot-replacement';
 
 
-describe('app-hot-reload', () => {
+describe('app-hot-replacement', () => {
 
   describe('hotReloadExternalStyle', () => {
     const versionId = '1234';
@@ -10,7 +10,7 @@ describe('app-hot-reload', () => {
       const styleSheet = { href: './file-a.css?s-v=4321&what=ever' } as HTMLLinkElement;
       const updatedUrl = './file-a.css';
 
-      hotReloadExternalStyle(versionId, styleSheet, updatedUrl);
+      reloadExternalStyle(versionId, styleSheet, updatedUrl);
 
       expect(styleSheet.href).toBe('./file-a.css?s-v=1234&what=ever');
     });
@@ -19,7 +19,7 @@ describe('app-hot-reload', () => {
       const styleSheet = { href: './file-a.css?what=ever' } as HTMLLinkElement;
       const updatedUrl = './file-a.css';
 
-      hotReloadExternalStyle(versionId, styleSheet, updatedUrl);
+      reloadExternalStyle(versionId, styleSheet, updatedUrl);
 
       expect(styleSheet.href).toBe('./file-a.css?what=ever&s-v=1234');
     });
@@ -28,7 +28,7 @@ describe('app-hot-reload', () => {
       const styleSheet = { href: 'file-a.css' } as HTMLLinkElement;
       const updatedUrl = 'file-a.css';
 
-      hotReloadExternalStyle(versionId, styleSheet, updatedUrl);
+      reloadExternalStyle(versionId, styleSheet, updatedUrl);
 
       expect(styleSheet.href).toBe('file-a.css?s-v=1234');
     });
@@ -37,7 +37,7 @@ describe('app-hot-reload', () => {
       const styleSheet = { href: '/build/file-a.css' } as HTMLLinkElement;
       const updatedUrl = '/build/file-a.css';
 
-      hotReloadExternalStyle(versionId, styleSheet, updatedUrl);
+      reloadExternalStyle(versionId, styleSheet, updatedUrl);
 
       expect(styleSheet.href).toBe('/build/file-a.css?s-v=1234');
     });
@@ -46,7 +46,7 @@ describe('app-hot-reload', () => {
       const styleSheet = { href: '/build/file-a.css' } as HTMLLinkElement;
       const updatedUrl = '/build/file-b.css';
 
-      hotReloadExternalStyle(versionId, styleSheet, updatedUrl);
+      reloadExternalStyle(versionId, styleSheet, updatedUrl);
 
       expect(styleSheet.href).toBe('/build/file-a.css');
     });

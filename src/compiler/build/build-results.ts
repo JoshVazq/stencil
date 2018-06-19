@@ -12,9 +12,11 @@ export async function generateBuildResults(config: d.Config, compilerCtx: d.Comp
   const buildResults: d.BuildResults = {
     buildId: buildCtx.buildId,
     diagnostics: cleanDiagnostics(buildCtx.diagnostics),
+    duration: Date.now() - buildCtx.startTime,
     hasError: hasError(buildCtx.diagnostics),
     hasSuccessfulBuild: compilerCtx.hasSuccessfulBuild,
-    duration: Date.now() - buildCtx.startTime,
+    hasSlot: buildCtx.hasSlot,
+    hasSvg: buildCtx.hasSvg,
     isRebuild: buildCtx.isRebuild,
     transpileBuildCount: buildCtx.transpileBuildCount,
     bundleBuildCount: buildCtx.bundleBuildCount,

@@ -66,6 +66,8 @@ export interface BuildResults {
   filesWritten: string[];
   hasError: boolean;
   hasSuccessfulBuild: boolean;
+  hasSlot: boolean;
+  hasSvg: boolean;
   hmr?: HotReplacement;
   isRebuild: boolean;
   styleBuildCount: number;
