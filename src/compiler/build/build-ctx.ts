@@ -43,7 +43,7 @@ export class BuildContext implements d.BuildCtx {
   stylesUpdated: { [styleId: string]: string } = {};
   timeSpan: d.LoggerTimeSpan = null;
   transpileBuildCount = 0;
-  validateTypesPromise: Promise<d.Diagnostic[]>;
+  validateTypesPromise: Promise<d.ValidateTypesResults>;
 
   constructor(private config: d.Config, private compilerCtx: d.CompilerCtx, watchResults: d.WatchResults = null) {
     this.setBuildTimestamp();
