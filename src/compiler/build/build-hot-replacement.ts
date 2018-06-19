@@ -6,27 +6,27 @@ export function genereateHotReplacement(config: d.Config, compilerCtx: d.Compile
     return null;
   }
 
-  const hotReload: d.HotReplacement = {};
+  const hmr: d.HotReplacement = {};
 
   const componentsUpdated = getComponentsUpdated(compilerCtx, buildCtx);
   if (componentsUpdated) {
-    hotReload.componentsUpdated = componentsUpdated;
+    hmr.componentsUpdated = componentsUpdated;
   }
 
   if (Object.keys(buildCtx.stylesUpdated).length > 0) {
-    hotReload.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
+    hmr.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
   }
 
   const externalStylesUpdated = getExternalStylesUpdated(config, buildCtx);
   if (externalStylesUpdated) {
-    hotReload.externalStylesUpdated = getExternalStylesUpdated(config, buildCtx);
+    hmr.externalStylesUpdated = getExternalStylesUpdated(config, buildCtx);
   }
 
-  if (Object.keys(hotReload).length === 0) {
+  if (Object.keys(hmr).length === 0) {
     return null;
   }
 
-  return hotReload;
+  return hmr;
 }
 
 
