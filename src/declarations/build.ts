@@ -80,10 +80,6 @@ export interface HotReplacement {
   externalStylesUpdated?: string[];
   stylesUpdated?: { [styleId: string]: string };
   windowReload?: boolean;
-  components?: BuildComponent[];
-  entries?: BuildEntry[];
-  hasSlot?: boolean;
-  hasSvg?: boolean;
 }
 
 
