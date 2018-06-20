@@ -4,7 +4,6 @@ import { getConfigFilePath } from './cli-utils';
 import { helpTask } from './task-help';
 import { parseFlags } from './parse-flags';
 import { runTask } from './run-task';
-import { startTask } from './task-start';
 import { WORKER_EXITED_MSG } from '../sys/node/worker-farm/main';
 
 
@@ -17,11 +16,6 @@ export async function run(process: NodeJS.Process, sys: d.StencilSystem, logger:
 
   if (flags.help || flags.task === `help`) {
     helpTask(process, logger);
-    process.exit(0);
-  }
-
-  if (flags.task === `start`) {
-    await startTask(process, sys, logger);
     process.exit(0);
   }
 

@@ -29,7 +29,7 @@ export class Compiler {
       this.config.logger.debug(`compiler runtime: ${this.config.sys.compiler.runtime}`);
       this.config.logger.debug(`compiler build: __BUILDID__`);
 
-      this.ctx.events.subscribe('build', (watchResults) => {
+      this.on('build', watchResults => {
         const buildCtx = new BuildContext(this.config, this.ctx, watchResults);
         build(this.config, this.ctx, buildCtx);
       });
@@ -56,7 +56,7 @@ export class Compiler {
     return build(this.config, this.ctx, buildCtx);
   }
 
-  on(eventName: 'build', cb: (buildResults: d.BuildResults) => void): Function;
+  on(eventName: 'build', cb: (watchResults?: d.WatchResults) => void): Function;
   on(eventName: 'buildStart', cb: () => void): Function;
   on(eventName: 'buildNoChange', cb: (buildResults: d.BuildNoChangeResults) => void): Function;
   on(eventName: 'buildFinish', cb: (buildResults: d.BuildResults) => void): Function;

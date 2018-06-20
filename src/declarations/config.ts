@@ -71,7 +71,7 @@ export interface NodeResolveConfig {
 
 
 export interface ConfigFlags {
-  task?: 'build' | 'docs' | 'help' | 'serve' | 'start';
+  task?: 'build' | 'docs' | 'help' | 'serve';
   cache?: boolean;
   config?: string;
   debug?: boolean;

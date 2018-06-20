@@ -23,7 +23,6 @@ export function helpTask(process: NodeJS.Process, logger: d.Logger) {
 
     ${p} ${logger.green('stencil build --dev --watch --serve')}
     ${p} ${logger.green('stencil build --prerender')}
-    ${p} ${logger.green('stencil start myapp')}
 
 `);
 }
