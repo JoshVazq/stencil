@@ -8,6 +8,7 @@ export interface Config {
   buildEs5?: boolean;
   buildLogFilePath?: string;
   bundles?: ConfigBundle[];
+  cacheDir?: string;
   commonjs?: BundlingConfig;
   cwd?: string;
   nodeResolve?: NodeResolveConfig;
@@ -28,6 +29,7 @@ export interface Config {
   includeSrc?: string[];
   logger?: d.Logger;
   logLevel?: 'error'|'warn'|'info'|'debug'|string;
+  maxConcurrentWorkers?: number;
   minifyCss?: boolean;
   minifyJs?: boolean;
   namespace?: string;

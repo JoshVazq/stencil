@@ -13,6 +13,7 @@ export interface StencilSystem {
   createDom?(): CreateDom;
   createWatcher?(events: d.BuildEvents, paths: string, opts?: any): d.FsWatcher;
   destroy?(): void;
+  details?: SystemDetails;
   fs?: d.FileSystem;
   generateContentHash?(content: string, length: number): string;
   getClientCoreFile?(opts: {staticName: string}): Promise<string>;
@@ -21,6 +22,7 @@ export interface StencilSystem {
     nodir?: boolean;
   }): Promise<string[]>;
   gzipSize?(text: string): Promise<number>;
+  initWorkers?(maxConcurrentWorkers: number): number;
   isGlob?(str: string): boolean;
   loadConfigFile?(configPath: string, process?: any): d.Config;
   minifyCss?(input: string, filePath?: string, opts?: any): Promise<{
@@ -34,10 +36,8 @@ export interface StencilSystem {
     diagnostics?: d.Diagnostic[];
   }>;
   minimatch?(path: string, pattern: string, opts?: any): boolean;
-  name: string;
   open?: (p: string) => Promise<void>;
   path?: Path;
-  platform?: string;
   resolveModule?(fromDir: string, moduleId: string): string;
   rollup?: {
     rollup: {
@@ -52,7 +52,7 @@ export interface StencilSystem {
     lt: (a: string, b: string, loose?: boolean) => boolean;
     lte: (a: string, b: string, loose?: boolean) => boolean;
   };
-  tmpdir?(): string;
+  transpileToEs5?(cwd: string, input: string): Promise<d.TranspileResults>;
   url?: {
     parse(urlStr: string, parseQueryString?: boolean, slashesDenoteHost?: boolean): Url;
     format(url: Url): string;
@@ -64,6 +64,17 @@ export interface StencilSystem {
     runInContext(code: string, contextifiedSandbox: any, options?: any): any;
   };
   workbox?: Workbox;
+}
+
+
+export interface SystemDetails {
+  cpuModel: string;
+  cpus: number;
+  freemem: number;
+  platform: string;
+  runtime: string;
+  runtimeVersion: string;
+  release: string;
 }
 
 

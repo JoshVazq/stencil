@@ -18,16 +18,25 @@ export class Compiler {
     [ this.isValid, this.config ] = isValid(rawConfig);
 
     if (this.isValid) {
-      this.ctx = getCompilerCtx(this.config);
+      const details = this.config.sys.details;
 
       let startupMsg = `${this.config.sys.compiler.name} v${this.config.sys.compiler.version} `;
-      if (this.config.sys.platform !== 'win32') {
+      if (details.platform !== 'win32') {
         startupMsg += `💎`;
       }
 
       this.config.logger.info(this.config.logger.cyan(startupMsg));
+
+      this.config.logger.debug(`${details.platform}, ${details.cpuModel}, cpus: ${details.cpus}, freemem: ${details.freemem}`);
+      this.config.logger.debug(`${details.runtime} ${details.runtimeVersion}`);
+
       this.config.logger.debug(`compiler runtime: ${this.config.sys.compiler.runtime}`);
       this.config.logger.debug(`compiler build: __BUILDID__`);
+
+      const workers = this.config.sys.initWorkers(this.config.maxConcurrentWorkers);
+      this.config.logger.debug(`compiler workers: ${workers}`);
+
+      this.ctx = getCompilerCtx(this.config);
 
       this.on('build', watchResults => {
         const buildCtx = new BuildContext(this.config, this.ctx, watchResults);
@@ -41,7 +50,7 @@ export class Compiler {
   }
 
   async startDevServer() {
-    if (this.config.sys.name !== 'node') {
+    if (this.config.sys.details.runtime !== 'node') {
       throw new Error(`Dev Server only availabe in node`);
     }
 

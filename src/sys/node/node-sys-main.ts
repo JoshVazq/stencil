@@ -22,9 +22,8 @@ export class NodeSystem implements d.StencilSystem {
 
   fs: d.FileSystem;
   path: d.Path;
-  name = 'node';
 
-  constructor(fs?: d.FileSystem, maxConcurrentWorkers?: number) {
+  constructor(fs?: d.FileSystem) {
     this.fs = fs || new NodeFs();
     this.path = path;
 
@@ -44,20 +43,26 @@ export class NodeSystem implements d.StencilSystem {
     } catch (e) {
       throw new Error(`unable to resolve "typescript" from: ${rootDir}`);
     }
-
-    if (typeof maxConcurrentWorkers !== 'number') {
-      maxConcurrentWorkers = os.cpus().length;
-    }
-
-    this.initWorkerFarm(maxConcurrentWorkers);
   }
 
-  initWorkerFarm(maxConcurrentWorkers: number) {
+  initWorkers(maxConcurrentWorkers: number) {
+    if (this.sysWorker) {
+      return maxConcurrentWorkers;
+    }
     const workerModulePath = require.resolve(path.join(this.distDir, 'sys', 'node', 'sys-worker.js'));
+
+    const availableCpus = os.cpus().length;
+    if (typeof maxConcurrentWorkers === 'number') {
+      maxConcurrentWorkers = Math.max(1, Math.min(availableCpus, maxConcurrentWorkers));
+    } else {
+      maxConcurrentWorkers = availableCpus;
+    }
 
     this.sysWorker = new WorkerFarm(workerModulePath, {
       maxConcurrentWorkers: maxConcurrentWorkers
     });
+
+    return maxConcurrentWorkers;
   }
 
   destroy() {
@@ -242,8 +247,26 @@ export class NodeSystem implements d.StencilSystem {
     return this.sysUtil.opn(p);
   }
 
-  get platform() {
-    return os.platform();
+  get details() {
+    const details: d.SystemDetails = {
+      cpuModel: '',
+      cpus: -1,
+      freemem: -1,
+      platform: '',
+      release: '',
+      runtime: 'node',
+      runtimeVersion: ''
+    };
+    try {
+      const cpus = os.cpus();
+      details.cpuModel = cpus[0].model;
+      details.cpus = cpus.length;
+      details.freemem = os.freemem();
+      details.platform = os.platform();
+      details.release = os.release();
+      details.runtimeVersion = process.version;
+    } catch (e) {}
+    return details;
   }
 
   resolveModule(fromDir: string, moduleId: string) {
@@ -301,8 +324,8 @@ export class NodeSystem implements d.StencilSystem {
     return this.sysUtil.semver;
   }
 
-  tmpdir() {
-    return path.join(os.tmpdir(), `stencil-${this.packageJsonData.version}-__BUILDID__`);
+  async transpileToEs5(cwd: string, input: string) {
+    return this.sysWorker.run('transpileToEs5', [cwd, input]);
   }
 
   get url() {
