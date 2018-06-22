@@ -42,8 +42,8 @@ export function initHostElement(
   };
 
   if (Build.hotModuleReplacement) {
-    HostElementConstructor['s-hmr'] = function() {
-      hotModuleReplacement(plt, (this as d.HostElement));
+    HostElementConstructor['s-hmr'] = function(versionId: string) {
+      hotModuleReplacement(plt, (this as d.HostElement), versionId);
     };
   }
 

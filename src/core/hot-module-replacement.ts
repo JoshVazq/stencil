@@ -3,10 +3,10 @@ import { dashToPascalCase } from '../util/helpers';
 import { queueUpdate } from './update';
 
 
-export function hotModuleReplacement(plt: d.PlatformApi, elm: d.HostElement) {
+export function hotModuleReplacement(plt: d.PlatformApi, elm: d.HostElement, versionId: string) {
   const cmpMeta = plt.getComponentMeta(elm);
   if (cmpMeta && cmpMeta.hmrUrl) {
-    const url = cmpMeta.hmrUrl + '?hmr=' + (Date.now().toString().substring(4));
+    const url = cmpMeta.hmrUrl + '?s-hmr=' + versionId;
 
     __import(url).then(importedModule => {
       // replace the constructor with the new one

@@ -251,8 +251,7 @@ export class WatcherListener {
         filesChanged: [],
         changedExtensions: [],
         hasScriptChanges: false,
-        hasStyleChanges: false,
-        hasImageChanges: false
+        hasStyleChanges: false
       };
 
       // reset the watcher data for next time

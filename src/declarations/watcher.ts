@@ -34,11 +34,6 @@ export interface WatchResults {
   hasStyleChanges: boolean;
 
   /**
-   * Changes to png/jpg/gif files
-   */
-  hasImageChanges: boolean;
-
-  /**
    * Change to stencil.config.js
    */
   configUpdated: boolean;

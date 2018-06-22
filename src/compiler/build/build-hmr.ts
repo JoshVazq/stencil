@@ -1,12 +1,12 @@
 import * as d from '../../declarations';
 
 
-export function genereateHotReplacement(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
-  if (!buildCtx.isRebuild || !config.devServer || !config.devServer.hotReplacement) {
+export function genereateHmr(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
+  if (!config.devServer || !config.devServer.hotReplacement || !buildCtx.isRebuild) {
     return null;
   }
 
-  const hmr: d.HotReplacement = {};
+  const hmr: d.HotModuleReplacement = {};
 
   const componentsUpdated = getComponentsUpdated(compilerCtx, buildCtx);
   if (componentsUpdated) {
@@ -14,17 +14,24 @@ export function genereateHotReplacement(config: d.Config, compilerCtx: d.Compile
   }
 
   if (Object.keys(buildCtx.stylesUpdated).length > 0) {
-    hmr.stylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
+    hmr.inlineStylesUpdated = Object.assign({}, buildCtx.stylesUpdated);
   }
 
   const externalStylesUpdated = getExternalStylesUpdated(config, buildCtx);
   if (externalStylesUpdated) {
-    hmr.externalStylesUpdated = getExternalStylesUpdated(config, buildCtx);
+    hmr.externalStylesUpdated = externalStylesUpdated;
+  }
+
+  const externalImagesUpdated = getImagesUpdated(config, buildCtx);
+  if (externalImagesUpdated) {
+    hmr.imagesUpdated = externalImagesUpdated;
   }
 
   if (Object.keys(hmr).length === 0) {
     return null;
   }
+
+  hmr.versionId = Date.now().toString().substring(5);
 
   return hmr;
 }
@@ -37,7 +44,7 @@ function getComponentsUpdated(compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) 
   }
 
   const changedScriptFiles = buildCtx.filesChanged.filter(f => {
-    return f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js');
+    return f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js') || f.endsWith('.jsx');
   });
 
   if (changedScriptFiles.length === 0) {
@@ -112,13 +119,34 @@ function getExternalStylesUpdated(config: d.Config, buildCtx: d.BuildCtx) {
     return null;
   }
 
-  const updatedCssFiles: string[] = [];
-
-  cssFiles.forEach(fileWritten => {
-    outputTargets.forEach(outputTarget => {
-      updatedCssFiles.push('/' + config.sys.path.relative(outputTarget.dir, fileWritten));
-    });
-  });
-
-  return updatedCssFiles.sort();
+  return cssFiles.map(cssFile => {
+    return config.sys.path.basename(cssFile);
+  }).sort();
 }
+
+
+function getImagesUpdated(config: d.Config, buildCtx: d.BuildCtx) {
+  const outputTargets = (config.outputTargets as d.OutputTargetWww[]).filter(o => o.type === 'www');
+  if (outputTargets.length === 0) {
+    return null;
+  }
+
+  const imageFiles = buildCtx.filesChanged.reduce((arr, filePath) => {
+    if (IMAGE_EXT.some(ext => filePath.toLowerCase().endsWith(ext))) {
+      const fileName = config.sys.path.basename(filePath);
+      if (!arr.includes(fileName)) {
+        arr.push(fileName);
+      }
+    }
+    return arr;
+  }, []);
+
+  if (imageFiles.length === 0) {
+    return null;
+  }
+
+  return imageFiles.sort();
+}
+
+
+const IMAGE_EXT = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.svg'];

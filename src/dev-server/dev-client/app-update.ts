@@ -1,6 +1,9 @@
 import  * as d from '../../declarations';
 import { appError, clearDevServerModal } from './app-error';
-import { appHotReplacement } from './app-hot-replacement';
+import { hmrComponents } from './hmr-components';
+import { hmrExternalStyles } from './hmr-external-styles';
+import { hmrImages } from './hmr-images';
+import { hmrInlineStyles } from './hmr-inline-styles';
 
 
 export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow, doc: Document, buildResults: d.BuildResults) {
@@ -28,12 +31,41 @@ export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow,
     }
 
     if (buildResults.hmr) {
-      // let's do some hot module replacement shall we
-      appHotReplacement(win, doc, buildResults.hmr);
+      appHmr(win, doc.documentElement, buildResults.hmr);
     }
 
   } catch (e) {
     console.error(e);
+  }
+}
+
+
+function appHmr(win: Window, documentElement: Element, hmr: d.HotModuleReplacement) {
+  // let's do some hot module replacement shall we
+  if (hmr.windowReload) {
+    win.location.reload(true);
+    return;
+  }
+
+  if (hmr.componentsUpdated) {
+    if (!supportsComponentHmr()) {
+      win.location.reload(true);
+      return;
+    }
+
+    hmrComponents(documentElement, hmr.versionId, hmr.componentsUpdated);
+  }
+
+  if (hmr.inlineStylesUpdated) {
+    hmrInlineStyles(documentElement, hmr.versionId, hmr.inlineStylesUpdated);
+  }
+
+  if (hmr.externalStylesUpdated) {
+    hmrExternalStyles(documentElement, hmr.versionId, hmr.externalStylesUpdated);
+  }
+
+  if (hmr.imagesUpdated) {
+    hmrImages(win, documentElement, hmr.versionId, hmr.imagesUpdated);
   }
 }
 
@@ -60,4 +92,13 @@ export function appReset(win: d.DevClientWindow) {
     }
     return Promise.resolve();
   });
+}
+
+
+function supportsComponentHmr() {
+  try {
+    new Function('import("")');
+    return true;
+  } catch (e) {}
+  return false;
 }

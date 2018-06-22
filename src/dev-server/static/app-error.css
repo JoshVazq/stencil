@@ -22,7 +22,7 @@
   text-size-adjust: none;
   word-wrap: break-word;
   color: #333;
-  background-color: #fff;
+  background-color: white;
   box-sizing: border-box;
   overflow: hidden;
   user-select: auto;
@@ -50,7 +50,7 @@
 
 .dev-server-diagnostic-title {
   margin: 0;
-  font-size: 16px;
+  font-weight: bold;
   color: #222;
 }
 

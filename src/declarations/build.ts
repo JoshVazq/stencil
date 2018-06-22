@@ -16,7 +16,6 @@ export interface BuildCtx {
   dirsDeleted: string[];
   entryModules: d.EntryModule[];
   entryPoints: d.EntryPoint[];
-  externalStylesUpdated: string[];
   filesAdded: string[];
   filesChanged: string[];
   filesDeleted: string[];
@@ -27,7 +26,6 @@ export interface BuildCtx {
   graphData: GraphData;
   hasCopyChanges: boolean;
   hasFinished: boolean;
-  hasImageChanges: boolean;
   hasScriptChanges: boolean;
   hasSlot: boolean;
   hasStyleChanges: boolean;
@@ -68,18 +66,25 @@ export interface BuildResults {
   hasSuccessfulBuild: boolean;
   hasSlot: boolean;
   hasSvg: boolean;
-  hmr?: HotReplacement;
+  hmr?: HotModuleReplacement;
   isRebuild: boolean;
   styleBuildCount: number;
   transpileBuildCount: number;
 }
 
 
-export interface HotReplacement {
+export interface HotModuleReplacement {
   componentsUpdated?: string[];
   externalStylesUpdated?: string[];
-  stylesUpdated?: { [styleId: string]: string };
+  imagesUpdated?: string[];
+  inlineStylesUpdated?: HmrStylesUpdate;
+  versionId?: string;
   windowReload?: boolean;
+}
+
+
+export interface HmrStylesUpdate {
+  [styleId: string]: string;
 }
 
 

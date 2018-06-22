@@ -1,8 +1,8 @@
 import * as d from '../../declarations';
 import { cleanDiagnostics } from '../../util/logger/logger-util';
 import { DEFAULT_STYLE_MODE, ENCAPSULATION } from '../../util/constants';
+import { genereateHmr } from './build-hmr';
 import { hasError, normalizePath } from '../util';
-import { genereateHotReplacement } from './build-hot-replacement';
 
 
 export async function generateBuildResults(config: d.Config, compilerCtx: d.CompilerCtx, buildCtx: d.BuildCtx) {
@@ -36,7 +36,7 @@ export async function generateBuildResults(config: d.Config, compilerCtx: d.Comp
     }))
   };
 
-  const hmr = genereateHotReplacement(config, compilerCtx, buildCtx);
+  const hmr = genereateHmr(config, compilerCtx, buildCtx);
   if (hmr) {
     buildResults.hmr = hmr;
   }
