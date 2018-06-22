@@ -39,11 +39,10 @@ export function connectElement(config: d.Config, plt: d.PlatformApi, App: d.AppG
 
 
 function connectHostElement(config: d.Config, plt: d.PlatformApi, App: d.AppGlobal, hydrateResults: d.HydrateResults, elm: d.HostElement, cmpMeta: d.ComponentMeta) {
-  if (!cmpMeta.componentConstructor) {
-    const hostSnapshot = initHostSnapshot(plt.domApi, cmpMeta, elm);
-    // remember a "snapshot" of this host element's current attributes/child nodes/slots/etc
-    plt.hostSnapshotMap.set(elm, hostSnapshot);
+  const hostSnapshot = initHostSnapshot(plt.domApi, cmpMeta, elm);
+  plt.hostSnapshotMap.set(elm, hostSnapshot);
 
+  if (!cmpMeta.componentConstructor) {
     plt.requestBundle(cmpMeta, elm);
   }
 

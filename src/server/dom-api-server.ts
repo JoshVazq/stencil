@@ -14,7 +14,6 @@ export function patchDomApi(config: d.Config, plt: d.PlatformApi, domApi: d.DomA
       initHostElement(plt, cmpMeta, elm, config.namespace);
       const hostSnapshot = initHostSnapshot(domApi, cmpMeta, elm);
       plt.hostSnapshotMap.set(elm, hostSnapshot);
-
       plt.requestBundle(cmpMeta, elm);
     }
 
