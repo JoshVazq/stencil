@@ -8,12 +8,12 @@ export function hmrInlineStyles(elm: Element, versionId: string, stylesUpdated: 
     });
   }
 
-  if (elm.shadowRoot) {
-    hmrInlineStyles(elm.shadowRoot as any, versionId, stylesUpdated);
+  if (elm.nodeName.toLowerCase() === 'template' && (elm as HTMLTemplateElement).content) {
+    hmrInlineStyles((elm as HTMLTemplateElement).content as any, versionId, stylesUpdated);
   }
 
-  if ((elm as HTMLTemplateElement).content) {
-    hmrInlineStyles((elm as HTMLTemplateElement).content as any, versionId, stylesUpdated);
+  if (elm.shadowRoot) {
+    hmrInlineStyles(elm.shadowRoot as any, versionId, stylesUpdated);
   }
 
   if (elm.children) {

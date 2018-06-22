@@ -82,6 +82,10 @@ export function hmrImagesElements(win: Window, elm: Element, versionId: string, 
     }
   }
 
+  if (elm.nodeName.toLowerCase() === 'template' && (elm as HTMLTemplateElement).content) {
+    hmrImagesElements(win, elm.shadowRoot as any, versionId, imageFileNames);
+  }
+
   if (elm.shadowRoot) {
     hmrImagesElements(win, elm.shadowRoot as any, versionId, imageFileNames);
   }
