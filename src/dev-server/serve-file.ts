@@ -1,8 +1,10 @@
 import * as d from '../declarations';
-import { DEV_SERVER_URL, getContentType, isDevServerClient, isHtmlFile, isInitialDevServerLoad, isSimpleText, shouldCompress } from './util';
+import { DEV_SERVER_URL, getContentType, isCssFile, isDevServerClient, isHtmlFile, isInitialDevServerLoad, isSimpleText, shouldCompress } from './util';
 import { serve404, serve500 } from './serve-error';
 import * as http  from 'http';
 import * as path from 'path';
+import * as querystring from 'querystring';
+import * as Url from 'url';
 import * as zlib from 'zlib';
 import { Buffer } from 'buffer';
 
@@ -16,6 +18,9 @@ export async function serveFile(devServerConfig: d.DevServerConfig, fs: d.FileSy
       if (isHtmlFile(req.filePath) && !isDevServerClient(req.pathname)) {
         // auto inject our dev server script
         content += injectDevServerClient();
+
+      } else if (isCssFile(req.filePath)) {
+        content = updateStyleUrls(req.url, content);
       }
 
       const contentLength = Buffer.byteLength(content, 'utf8');
@@ -56,6 +61,49 @@ export async function serveFile(devServerConfig: d.DevServerConfig, fs: d.FileSy
   } catch (e) {
     serve500(res, e);
   }
+}
+
+const urlVersionIds = new Map<string, string>();
+
+function updateStyleUrls(cssUrl: string, oldCss: string) {
+  const parsedUrl = Url.parse(cssUrl);
+  const qs = querystring.parse(parsedUrl.query);
+
+  const versionId = qs['s-hmr'];
+  const hmrUrls = qs['s-hmr-urls'];
+
+  if (versionId && hmrUrls) {
+    (hmrUrls as string).split(',').forEach(hmrUrl => {
+      urlVersionIds.set(hmrUrl, versionId as string);
+    });
+  }
+
+  const reg = /url\((['"]?)(.*)\1\)/ig;
+  let result;
+  let newCss = oldCss;
+
+  while ((result = reg.exec(oldCss)) !== null) {
+    const oldUrl = result[2];
+
+    const parsedUrl = Url.parse(oldUrl);
+
+    const fileName = path.basename(parsedUrl.pathname);
+    const versionId = urlVersionIds.get(fileName);
+    if (!versionId) {
+      continue;
+    }
+
+    const qs = querystring.parse(parsedUrl.query);
+    qs['s-hmr'] = versionId;
+
+    parsedUrl.search = querystring.stringify(qs);
+
+    const newUrl = Url.format(parsedUrl);
+
+    newCss = newCss.replace(oldUrl, newUrl);
+  }
+
+  return newCss;
 }
 
 

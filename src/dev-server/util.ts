@@ -54,6 +54,12 @@ export function isHtmlFile(filePath: string) {
 }
 
 
+export function isCssFile(filePath: string) {
+  filePath = filePath.toLowerCase().trim();
+  return filePath.endsWith('.css');
+}
+
+
 const TXT_EXT = ['css', 'html', 'htm', 'js', 'json', 'svg', 'xml'];
 
 export function isSimpleText(filePath: string) {

@@ -30,8 +30,9 @@ if (success) {
         'http',
         'https',
         'net',
-        'path',
         'os',
+        'path',
+        'querystring',
         'url',
         'zlib'
       ],

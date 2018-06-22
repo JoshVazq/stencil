@@ -16,7 +16,15 @@ export function updateHmrHref(versionId: string, fileName: string, oldHref: stri
     return oldHref;
   }
 
-  const oldQs = hrefSplt[1];
+  const newQs = parseQuerystring(hrefSplt[1]);
+
+  newQs['s-hmr'] = versionId;
+
+  return oldHref.split('?')[0] + '?' + stringifyQuerystring(newQs);
+}
+
+
+export function parseQuerystring(oldQs: string) {
   const newQs: {[key: string]: string} = {};
   if (oldQs) {
     oldQs.split('&').forEach(kv => {
@@ -24,11 +32,13 @@ export function updateHmrHref(versionId: string, fileName: string, oldHref: stri
       newQs[splt[0]] = splt[1] ? splt[1] : '';
     });
   }
+  return newQs;
+}
 
-  newQs['s-hmr'] = versionId;
 
-  return oldHref.split('?')[0] + '?' + Object.keys(newQs).map(key => {
-    return key + '=' + newQs[key];
+export function stringifyQuerystring(qs: {[key: string]: string}) {
+  return Object.keys(qs).map(key => {
+    return key + '=' + qs[key];
   }).join('&');
 }
 

@@ -31,7 +31,7 @@ export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow,
     }
 
     if (buildResults.hmr) {
-      appHmr(win, doc.documentElement, buildResults.hmr);
+      appHmr(win, doc, buildResults.hmr);
     }
 
   } catch (e) {
@@ -40,7 +40,7 @@ export function appUpdate(ctx: d.DevServerClientContext, win: d.DevClientWindow,
 }
 
 
-function appHmr(win: Window, documentElement: Element, hmr: d.HotModuleReplacement) {
+function appHmr(win: Window, doc: Document, hmr: d.HotModuleReplacement) {
   // let's do some hot module replacement shall we
   if (hmr.windowReload) {
     win.location.reload(true);
@@ -53,19 +53,19 @@ function appHmr(win: Window, documentElement: Element, hmr: d.HotModuleReplaceme
       return;
     }
 
-    hmrComponents(documentElement, hmr.versionId, hmr.componentsUpdated);
+    hmrComponents(doc.documentElement, hmr.versionId, hmr.componentsUpdated);
   }
 
   if (hmr.inlineStylesUpdated) {
-    hmrInlineStyles(documentElement, hmr.versionId, hmr.inlineStylesUpdated);
+    hmrInlineStyles(doc.documentElement, hmr.versionId, hmr.inlineStylesUpdated);
   }
 
   if (hmr.externalStylesUpdated) {
-    hmrExternalStyles(documentElement, hmr.versionId, hmr.externalStylesUpdated);
+    hmrExternalStyles(doc.documentElement, hmr.versionId, hmr.externalStylesUpdated);
   }
 
   if (hmr.imagesUpdated) {
-    hmrImages(win, documentElement, hmr.versionId, hmr.imagesUpdated);
+    hmrImages(win, doc, hmr.versionId, hmr.imagesUpdated);
   }
 }
 
