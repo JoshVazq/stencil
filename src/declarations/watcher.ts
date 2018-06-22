@@ -12,6 +12,7 @@ export interface WatchResults {
   filesUpdated: string[];
   filesAdded: string[];
   filesDeleted: string[];
+  hasIndexHtmlChanges: boolean;
 
   /**
    * Changed files include files that are in copy tasks

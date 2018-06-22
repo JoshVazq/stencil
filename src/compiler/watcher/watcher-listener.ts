@@ -251,7 +251,8 @@ export class WatcherListener {
         filesChanged: [],
         changedExtensions: [],
         hasScriptChanges: false,
-        hasStyleChanges: false
+        hasStyleChanges: false,
+        hasIndexHtmlChanges: false
       };
 
       // reset the watcher data for next time
@@ -289,7 +290,7 @@ export class WatcherListener {
 }
 
 
-const TXT_EXT = ['.ts', '.tsx', '.js', '.jsx', '.html', '.html', '.css', '.scss', '.pcss', '.styl', '.stylus', '.less', '.md', '.xml', '.svg', '.json', '.txt'];
+const TXT_EXT = ['.ts', '.tsx', '.js', '.jsx', '.html', '.htm', '.css', '.scss', '.pcss', '.styl', '.stylus', '.less', '.md', '.xml', '.svg', '.json', '.txt'];
 
 
 function shouldRebuild(watcher: d.WatchResults) {

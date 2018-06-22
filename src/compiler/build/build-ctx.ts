@@ -29,6 +29,7 @@ export class BuildContext implements d.BuildCtx {
   graphData: d.GraphData = null;
   hasCopyChanges = false;
   hasFinished = false;
+  hasIndexHtmlChanges = false;
   hasScriptChanges = true;
   hasSlot: boolean = null;
   hasStyleChanges = true;
@@ -78,6 +79,7 @@ export class BuildContext implements d.BuildCtx {
       this.hasCopyChanges = watchResults.hasCopyChanges;
       this.hasScriptChanges = watchResults.hasScriptChanges;
       this.hasStyleChanges = watchResults.hasStyleChanges;
+      this.hasIndexHtmlChanges = watchResults.hasIndexHtmlChanges;
 
       this.filesChanged.push(...watchResults.filesChanged);
       this.filesUpdated.push(...watchResults.filesUpdated);

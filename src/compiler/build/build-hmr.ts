@@ -8,6 +8,10 @@ export function genereateHmr(config: d.Config, compilerCtx: d.CompilerCtx, build
 
   const hmr: d.HotModuleReplacement = {};
 
+  if (buildCtx.hasIndexHtmlChanges) {
+    hmr.indexHtmlUpdated = true;
+  }
+
   const componentsUpdated = getComponentsUpdated(compilerCtx, buildCtx);
   if (componentsUpdated) {
     hmr.componentsUpdated = componentsUpdated;

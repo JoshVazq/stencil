@@ -47,6 +47,11 @@ function appHmr(win: Window, doc: Document, hmr: d.HotModuleReplacement) {
     return;
   }
 
+  if (hmr.indexHtmlUpdated) {
+    win.location.reload(true);
+    return;
+  }
+
   if (hmr.componentsUpdated) {
     if (!supportsComponentHmr()) {
       win.location.reload(true);

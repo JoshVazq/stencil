@@ -26,6 +26,7 @@ export interface BuildCtx {
   graphData: GraphData;
   hasCopyChanges: boolean;
   hasFinished: boolean;
+  hasIndexHtmlChanges: boolean;
   hasScriptChanges: boolean;
   hasSlot: boolean;
   hasStyleChanges: boolean;
@@ -79,6 +80,7 @@ export interface HotModuleReplacement {
   imagesUpdated?: string[];
   inlineStylesUpdated?: HmrStylesUpdate;
   versionId?: string;
+  indexHtmlUpdated?: boolean;
   windowReload?: boolean;
 }
 

@@ -20,6 +20,10 @@ export function rebuild(config: Config, compilerCtx: CompilerCtx, watchResults: 
   watchResults.hasScriptChanges = watchResults.changedExtensions.some(ext => SCRIPT_EXT.includes(ext));
   watchResults.hasStyleChanges = watchResults.changedExtensions.some(ext => STYLE_EXT.includes(ext));
 
+  watchResults.hasIndexHtmlChanges = watchResults.filesChanged.some(fileChanged => {
+    return fileChanged === config.srcIndexHtml;
+  });
+
   // print out a pretty message about the changed files
   printWatcherMessage(config, watchResults);
 
