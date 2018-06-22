@@ -78,9 +78,9 @@ export interface HotModuleReplacement {
   componentsUpdated?: string[];
   externalStylesUpdated?: string[];
   imagesUpdated?: string[];
+  indexHtmlUpdated?: boolean;
   inlineStylesUpdated?: HmrStylesUpdate;
   versionId?: string;
-  indexHtmlUpdated?: boolean;
   windowReload?: boolean;
 }
 
