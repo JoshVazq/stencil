@@ -16,7 +16,7 @@ describe('validateDevServer', () => {
     config = {
       sys: sys,
       logger: logger,
-      rootDir: path.join(root, 'some', 'path'),
+      rootDir: normalizePath(path.join(root, 'some', 'path')),
       devServer: {
         contentTypes: {}
       },
@@ -50,7 +50,7 @@ describe('validateDevServer', () => {
   });
 
   it('should set absolute root', () => {
-    config.devServer.root = path.join(root, 'some', 'path', 'my-abs-root');
+    config.devServer.root = normalizePath(path.join(root, 'some', 'path', 'my-abs-root'));
     validateConfig(config);
     expect(config.devServer.root).toBe(normalizePath(path.join(root, 'some', 'path', 'my-abs-root')));
   });
